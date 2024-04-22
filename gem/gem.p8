@@ -54,8 +54,8 @@ function ini_board()
 	csize=12
 	
 	--cursor
-	curx=1
-	cury=1
+	curx=0
+	cury=0
 	
 	local i,j
 	for i=0,cols-1 do
@@ -70,18 +70,6 @@ function ini_board()
 			add(tiles,c)
 		end--for j
 	end--for i
-	
-	
-	--add mines
-	mines=10
-	
-	while mines>0 do
-		local r=flr(rnd(#tiles))+1
-		if (tiles[r].hasmine==false) then
-			tiles[r].hasmine=true
-			mines-=1
-		end--if
-	end--for
 end--ini_board()
 
 function drw_board()
@@ -98,21 +86,40 @@ end--drw_board()
 
 function drw_cursor()
 	rectfill(
-		2+tiles[curx].id_x,
-		2+tiles[cury].id_y,
-		tiles[curx].id_x+csize+2,
-		tiles[cury].id_y+csize+2,
-		10)
-	
-	?curx
+		2+curx*csize,
+		2+cury*csize,
+		(curx*csize)+csize+2,
+		(cury*csize)+csize+2,
+		8)
 end--drw_cursor()
 
 function upd_cursor()
 	if btnp(➡️) then
-		if curx<cols then
+		if curx<cols-1 then
 			curx+=1
 		else
-			curx=1
+			curx=0
+		end
+	end
+	if btnp(⬅️) then
+		if curx>0 then
+			curx-=1
+		else
+			curx=cols-1
+		end
+	end
+	if btnp(⬆️) then
+		if cury>0 then
+			cury-=1
+		else
+			cury=rows-1
+		end
+	end
+	if btnp(⬇️) then
+		if cury<rows-1 then
+			cury+=1
+		else
+			cury=0
 		end
 	end
 end--upd_cursor()
