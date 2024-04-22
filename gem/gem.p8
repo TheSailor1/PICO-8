@@ -36,12 +36,13 @@ function drw_menu()
 end
 
 function upd_game()
-	
+	upd_cursor()
 end
 
 function drw_game()
 	cls(12)
 	drw_board()
+	drw_cursor()
 end
 -->8
 -- game play
@@ -51,6 +52,10 @@ function ini_board()
 	cols=8
 	rows=8
 	csize=12
+	
+	--cursor
+	curx=1
+	cury=1
 	
 	local i,j
 	for i=0,cols-1 do
@@ -89,7 +94,28 @@ function drw_board()
 			tiles[c].id_y+csize+2,
 			7)
 	end--for
-end--drw-board()
+end--drw_board()
+
+function drw_cursor()
+	rectfill(
+		2+tiles[curx].id_x,
+		2+tiles[cury].id_y,
+		tiles[curx].id_x+csize+2,
+		tiles[cury].id_y+csize+2,
+		10)
+	
+	?curx
+end--drw_cursor()
+
+function upd_cursor()
+	if btnp(➡️) then
+		if curx<cols then
+			curx+=1
+		else
+			curx=1
+		end
+	end
+end--upd_cursor()
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
