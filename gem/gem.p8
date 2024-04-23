@@ -28,7 +28,7 @@ function upd_menu()
 end
 
 function drw_menu()
-	cls(12)
+	cls(13)
 	local t="gem"
 	print(t,64-(#t*2),32,7)
 	t="dredging"
@@ -51,7 +51,7 @@ function ini_board()
 	tiles={}
 	cols=8
 	rows=8
-	csize=12
+	size=12
 	
 	--cursor
 	curx=0
@@ -61,8 +61,8 @@ function ini_board()
 	for i=0,cols-1 do
 		for j=0,rows-1 do
 			local c={
-				id_x=i*csize,
-				id_y=j*csize,
+				id_x=i*size,
+				id_y=j*size,
 				revealed=false,
 				hasmine=false,
 				warn=0
@@ -73,27 +73,50 @@ function ini_board()
 end--ini_board()
 
 function drw_board()
-	local c
-	for c=1,#tiles do
+	local t,c
+	for t in all(tiles) do
+		if t.revealed then
+			c=1
+		else
+			c=7
+		end
 		rect(
-			2+tiles[c].id_x,
-			2+tiles[c].id_y,
-			tiles[c].id_x+csize+2,
-			tiles[c].id_y+csize+2,
-			7)
+			2+t.id_x,
+			2+t.id_y,
+			t.id_x+size+2,
+			t.id_y+size+2,
+			c)
 	end--for
 end--drw_board()
 
 function drw_cursor()
 	rectfill(
-		2+curx*csize,
-		2+cury*csize,
-		(curx*csize)+csize+2,
-		(cury*csize)+csize+2,
+		2+curx*size,
+		2+cury*size,
+		(curx*size)+size+2,
+		(cury*size)+size+2,
 		8)
 end--drw_cursor()
 
 function upd_cursor()
+	movecursor()
+	opentile()
+end--upd_cursor()
+
+function opentile()
+	local t
+	for t in all(tiles) do
+		if (btnp(❎)) then
+			if (curx*size==t.id_x
+			and cury*size==t.id_y 
+			and not t.revealed) then
+				t.revealed=true
+			end
+		end--if
+	end
+end--opentile
+
+function movecursor()
 	if btnp(➡️) then
 		if curx<cols-1 then
 			curx+=1
@@ -122,7 +145,7 @@ function upd_cursor()
 			cury=0
 		end
 	end
-end--upd_cursor()
+end--movecursor()
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
