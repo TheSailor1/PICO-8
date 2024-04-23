@@ -7,6 +7,9 @@ __lua__
 function _init()
 	_upd=upd_menu
 	_drw=drw_menu
+	
+	--★
+	debug={}
 end
 
 function _update60()
@@ -15,6 +18,12 @@ end
 
 function _draw()
 	_drw()
+	
+	--★
+	local i
+	for i=1,#debug do
+		print(debug[i],2,2+(i*6),7)
+	end
 end
 -->8
 -- screens
@@ -70,32 +79,56 @@ function ini_board()
 			add(tiles,c)
 		end--for j
 	end--for i
+	
+	--adding mines
+	allmines=10
+	
+	while allmines>0 do
+		local rtile=flr(1+rnd(#tiles-1))
+		if not tiles[rtile].hasmine then
+			tiles[rtile].hasmine=true
+			allmines-=1
+		end
+	end
+	
 end--ini_board()
 
 function drw_board()
 	local t,c
 	for t in all(tiles) do
-		if t.revealed then
-			c=1
-		else
+		if not t.revealed then
 			c=7
 		end
-		rect(
+		if t.revealed and t.hasmine then
+			c=8
+		elseif t.revealed then
+			c=1
+		end
+		
+		rectfill(
 			2+t.id_x,
 			2+t.id_y,
 			t.id_x+size+2,
 			t.id_y+size+2,
 			c)
+			
+		rect(
+			2+t.id_x,
+			2+t.id_y,
+			t.id_x+size+2,
+			t.id_y+size+2,
+			1)
+		
 	end--for
 end--drw_board()
 
 function drw_cursor()
-	rectfill(
-		2+curx*size,
-		2+cury*size,
-		(curx*size)+size+2,
-		(cury*size)+size+2,
-		8)
+	rect(
+		1+curx*size,
+		1+cury*size,
+		(curx*size)+size+3,
+		(cury*size)+size+3,
+		9)
 end--drw_cursor()
 
 function upd_cursor()
