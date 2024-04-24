@@ -22,7 +22,7 @@ function _draw()
 	--★
 	local i
 	for i=1,#debug do
-		print(debug[i],2,2+(i*6),7)
+		print(debug[i],2,102+(i*6),7)
 	end
 end
 -->8
@@ -138,16 +138,107 @@ end--upd_cursor()
 
 function opentile()
 	local t
-	for t in all(tiles) do
+	for t=1,#tiles do
 		if (btnp(❎)) then
-			if (curx*size==t.id_x
-			and cury*size==t.id_y 
-			and not t.revealed) then
-				t.revealed=true
+			if (curx*size==tiles[t].id_x
+			and cury*size==tiles[t].id_y 
+			and not tiles[t].revealed) then
+				tiles[t].revealed=true
+				checkaround(t)
 			end
+			
 		end--if
 	end
 end--opentile
+
+function checkaround(_t)
+	local u,d,l,r,tl,tr,bl,br
+	
+	--above _t
+	if tiles[_t].id_y~=0 then
+		u=_t-1
+	else
+		u=_t
+	end
+	if not tiles[u].revealed then
+		tiles[u].revealed=true
+	end
+	
+	--below _t
+	if tiles[_t].id_y~=84 then
+		d=_t+1
+	else
+		d=_t
+	end
+	if not tiles[d].revealed then
+		tiles[d].revealed=true
+	end
+	
+	--left of _t
+	if tiles[_t].id_x~=0 then
+		l=_t-8
+	else
+		l=_t
+	end
+	if not tiles[l].revealed then
+		tiles[l].revealed=true
+	end
+	
+	--right of _t
+	if tiles[_t].id_x~=84 then
+		r=_t+8
+	else
+		r=_t
+	end
+	if not tiles[r].revealed then
+		tiles[r].revealed=true
+	end
+	
+	
+	--topleft of _t
+	if tiles[_t].id_y~=0 and
+	tiles[_t].id_x~=0 then
+		tl=_t-9
+	else
+		tl=_t
+	end
+	if not tiles[tl].revealed then
+		tiles[tl].revealed=true
+	end
+	
+	--topright of _t
+	if tiles[_t].id_y~=0 and
+	tiles[_t].id_x~=84 then
+		tr=_t+7
+	else
+		tr=_t
+	end
+	if not tiles[tr].revealed then
+		tiles[tr].revealed=true
+	end
+	
+	--btmleft of _t
+	if tiles[_t].id_y~=84 and
+	tiles[_t].id_x~=0 then
+		bl=_t-7
+	else
+		bl=_t
+	end
+	if not tiles[bl].revealed then
+		tiles[bl].revealed=true
+	end
+	
+	--btmright of _t
+	if tiles[_t].id_y~=84 and
+	tiles[_t].id_x~=84 then
+		br=_t+9
+	else
+		br=_t
+	end
+	if not tiles[br].revealed then
+		tiles[br].revealed=true
+	end
+end--checkaround()
 
 function movecursor()
 	if btnp(➡️) then
