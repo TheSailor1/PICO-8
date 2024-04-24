@@ -160,7 +160,8 @@ function checkaround(_t)
 	else
 		u=_t
 	end
-	if not tiles[u].revealed then
+	if not tiles[u].revealed and
+	not tiles[u].hasmine then
 		tiles[u].revealed=true
 	end
 	
@@ -170,7 +171,8 @@ function checkaround(_t)
 	else
 		d=_t
 	end
-	if not tiles[d].revealed then
+	if not tiles[d].revealed and
+	not tiles[d].hasmine then
 		tiles[d].revealed=true
 	end
 	
@@ -180,7 +182,8 @@ function checkaround(_t)
 	else
 		l=_t
 	end
-	if not tiles[l].revealed then
+	if not tiles[l].revealed and
+	not tiles[l].hasmine then
 		tiles[l].revealed=true
 	end
 	
@@ -190,7 +193,8 @@ function checkaround(_t)
 	else
 		r=_t
 	end
-	if not tiles[r].revealed then
+	if not tiles[r].revealed and
+	not tiles[r].hasmine then
 		tiles[r].revealed=true
 	end
 	
@@ -202,7 +206,8 @@ function checkaround(_t)
 	else
 		tl=_t
 	end
-	if not tiles[tl].revealed then
+	if not tiles[tl].revealed and
+	not tiles[tl].hasmine then
 		tiles[tl].revealed=true
 	end
 	
@@ -213,7 +218,8 @@ function checkaround(_t)
 	else
 		tr=_t
 	end
-	if not tiles[tr].revealed then
+	if not tiles[tr].revealed and
+	not tiles[tr].hasmine then
 		tiles[tr].revealed=true
 	end
 	
@@ -224,7 +230,8 @@ function checkaround(_t)
 	else
 		bl=_t
 	end
-	if not tiles[bl].revealed then
+	if not tiles[bl].revealed and
+	not tiles[bl].hasmine then
 		tiles[bl].revealed=true
 	end
 	
@@ -235,7 +242,8 @@ function checkaround(_t)
 	else
 		br=_t
 	end
-	if not tiles[br].revealed then
+	if not tiles[br].revealed and
+	not tiles[br].hasmine then
 		tiles[br].revealed=true
 	end
 end--checkaround()
