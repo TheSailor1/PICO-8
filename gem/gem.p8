@@ -112,12 +112,18 @@ function drw_board()
 			t.id_y+size+2,
 			c)
 			
+			
 		rect(
 			2+t.id_x,
 			2+t.id_y,
 			t.id_x+size+2,
 			t.id_y+size+2,
 			1)
+			
+			if t.revealed and
+			not t.hasmine then
+				print(t.warn,4+t.id_x,4+t.id_y,2)
+			end
 		
 	end--for
 end--drw_board()
@@ -163,6 +169,9 @@ function checkaround(_t)
 	if not tiles[u].revealed and
 	not tiles[u].hasmine then
 		tiles[u].revealed=true
+		checkaround2(u)
+	elseif tiles[u].hasmine then
+		tiles[_t].warn+=1
 	end
 	
 	--below _t
@@ -174,6 +183,9 @@ function checkaround(_t)
 	if not tiles[d].revealed and
 	not tiles[d].hasmine then
 		tiles[d].revealed=true
+		checkaround2(d)
+	elseif tiles[d].hasmine then
+		tiles[_t].warn+=1
 	end
 	
 	--left of _t
@@ -185,6 +197,9 @@ function checkaround(_t)
 	if not tiles[l].revealed and
 	not tiles[l].hasmine then
 		tiles[l].revealed=true
+		checkaround2(l)
+	elseif tiles[l].hasmine then
+		tiles[_t].warn+=1
 	end
 	
 	--right of _t
@@ -196,6 +211,9 @@ function checkaround(_t)
 	if not tiles[r].revealed and
 	not tiles[r].hasmine then
 		tiles[r].revealed=true
+		checkaround2(r)
+	elseif tiles[r].hasmine then
+		tiles[_t].warn+=1
 	end
 	
 	
@@ -209,6 +227,9 @@ function checkaround(_t)
 	if not tiles[tl].revealed and
 	not tiles[tl].hasmine then
 		tiles[tl].revealed=true
+		checkaround2(tl)
+	elseif tiles[tl].hasmine then
+		tiles[_t].warn+=1
 	end
 	
 	--topright of _t
@@ -221,6 +242,9 @@ function checkaround(_t)
 	if not tiles[tr].revealed and
 	not tiles[tr].hasmine then
 		tiles[tr].revealed=true
+		checkaround2(tr)
+	elseif tiles[tr].hasmine then
+		tiles[_t].warn+=1
 	end
 	
 	--btmleft of _t
@@ -233,6 +257,9 @@ function checkaround(_t)
 	if not tiles[bl].revealed and
 	not tiles[bl].hasmine then
 		tiles[bl].revealed=true
+		checkaround2(bl)
+	elseif tiles[bl].hasmine then
+		tiles[_t].warn+=1
 	end
 	
 	--btmright of _t
@@ -245,8 +272,101 @@ function checkaround(_t)
 	if not tiles[br].revealed and
 	not tiles[br].hasmine then
 		tiles[br].revealed=true
+		checkaround2(br)
+	elseif tiles[br].hasmine then
+		tiles[_t].warn+=1
 	end
 end--checkaround()
+
+function checkaround2(_t)
+	local u,d,l,r,tl,tr,bl,br
+	
+	--above _t
+	if tiles[_t].id_y~=0 then
+		u=_t-1
+	else
+		u=_t
+	end
+	if tiles[u].hasmine then
+		tiles[_t].warn+=1
+	end
+	
+	--below _t
+	if tiles[_t].id_y~=84 then
+		d=_t+1
+	else
+		d=_t
+	end
+	if tiles[d].hasmine then
+		tiles[_t].warn+=1
+	end
+	
+	--left of _t
+	if tiles[_t].id_x~=0 then
+		l=_t-8
+	else
+		l=_t
+	end
+	if tiles[l].hasmine then
+		tiles[_t].warn+=1
+	end
+	
+	--right of _t
+	if tiles[_t].id_x~=84 then
+		r=_t+8
+	else
+		r=_t
+	end
+	if tiles[r].hasmine then
+		tiles[_t].warn+=1
+	end
+	
+	
+	--topleft of _t
+	if tiles[_t].id_y~=0 and
+	tiles[_t].id_x~=0 then
+		tl=_t-9
+	else
+		tl=_t
+	end
+	if tiles[tl].hasmine then
+		tiles[_t].warn+=1
+	end
+	
+	--topright of _t
+	if tiles[_t].id_y~=0 and
+	tiles[_t].id_x~=84 then
+		tr=_t+7
+	else
+		tr=_t
+	end
+	if tiles[tr].hasmine then
+		tiles[_t].warn+=1
+	end
+	
+	--btmleft of _t
+	if tiles[_t].id_y~=84 and
+	tiles[_t].id_x~=0 then
+		bl=_t-7
+	else
+		bl=_t
+	end
+	if tiles[bl].hasmine then
+		tiles[_t].warn+=1
+	end
+	
+	--btmright of _t
+	if tiles[_t].id_y~=84 and
+	tiles[_t].id_x~=84 then
+		br=_t+9
+	else
+		br=_t
+	end
+	if tiles[br].hasmine then
+		tiles[_t].warn+=1
+	end
+end--checkaround2()
+
 
 function movecursor()
 	if btnp(➡️) then
