@@ -52,6 +52,7 @@ function drw_game()
 	cls(12)
 	drw_board()
 	drw_cursor()
+	drw_gemboard()
 end
 -->8
 -- game play
@@ -136,6 +137,19 @@ function drw_cursor()
 		(cury*size)+size+3,
 		9)
 end--drw_cursor()
+
+function drw_gemboard()
+	print("gems",106,3,13)
+	rect(104,1,122,9,13)
+	
+	circfill(108,24,4,8)
+	circfill(108,35,4,11)
+	circfill(108,46,4,9)
+	
+	print(":3",114,22,7)
+	print(":1",114,33,7)
+	print(":0",114,44,7)
+end
 
 function upd_cursor()
 	movecursor()
