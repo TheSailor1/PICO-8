@@ -332,18 +332,23 @@ function drw_scoreboard()
 	
 	--flags
 	if curt=="flag" then
-		circfill(16,116,3,13)
-		circfill(16,117,3,1)
+		circfill(16,116,3,4)
+		circfill(16,118,3,15)
+		circfill(16,117,3,5)
 		
-		circfill(80,116,3,13)
-		circfill(80,117,3,1)
+		circfill(80,116,3,4)
+		circfill(80,118,3,15)
+		circfill(80,117,3,5)
 		
-		rectfill(16,113,80,120,13)
-		rectfill(16,114,80,120,1)
+		line(16,113,80,113,4)
+		line(16,121,80,121,15)
+		rectfill(16,114,80,120,5)
 		
-		orrect(48,98,38,8,10,9)
-		sspr(71,39,8,8,80,106)
-		print("flag mode",50,100,2)
+--			orrect(48,98,38,8,10,9)
+
+		drw_popup(
+			"flag mode 🅾️",
+			40,98,8,10,9)
 	end
 	
 	local f
@@ -386,7 +391,8 @@ function opentile()
 	for t=1,#tiles do
 			if (curx*size==tiles[t].id_x
 			and cury*size==tiles[t].id_y 
-			and not tiles[t].revealed) then
+			and not tiles[t].revealed
+			and not tiles[t].flag) then
 				tiles[t].revealed=true
 				checkaround(t)
 			end
@@ -430,7 +436,6 @@ function drw_flags()
 	for f=1,#flags do
 		sspr(36,12,9,10,flags[f].x+4,flags[f].y+3)
 	end--for
-	debug[1]=#flags
 end--drw_flags()
 
 function checkaround(_t)
@@ -694,6 +699,14 @@ function orrect(_x,_y,_w,_h,_c1,_c2)
 	
 	line(_x-3,_y+_h+3,_x+_w+3,_y+_h+3,1)
 	line(_x-3,_y+_h+4,_x+_w+3,_y+_h+4,1)
+end
+
+function drw_popup(_t,_x,_y,_h,_c1,_c2)
+	_w=#_t*4+2
+	orrect(_x,_y,_w,_h,_c1,_c2)
+--	orrect(48,98,38,8,10,9)
+	sspr(71,39,8,8,_x+_w-6,_y+_h)
+	print(_t,_x,_y+2,2)
 end
 __gfx__
 00544455550000544455550000544455550000555555550000511111150000770000022200000000022200000000111100000000011110000000001111000000
