@@ -28,7 +28,7 @@ function _init()
 	debug={}
 	
 	--★
-	showmines=true
+	showmines=false
 	showgems=false
 end
 
@@ -865,7 +865,7 @@ function checkwin()
 end
 
 function drw_win()
-	rectfill(0,0,127,127,11)
+	rectfill(0,30,127,90,11)
 	print("you won!",32,32,7)
 	print("traps found: "..flagtiles,32,62,7)
 end
