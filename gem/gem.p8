@@ -28,7 +28,7 @@ function _init()
 	debug={}
 	
 	--★
-	showmines=false
+	showmines=true
 	showgems=false
 end
 
@@ -865,9 +865,45 @@ function checkwin()
 end
 
 function drw_win()
-	rectfill(0,30,127,90,11)
-	print("you won!",32,32,7)
-	print("traps found: "..flagtiles,32,62,7)
+	--top
+	rectfill(0,14,127,35,9)
+	line(0,14,127,14,10)
+	
+	rectfill(13,17,29,32,7)
+	rectfill(6,17,11,32,7)
+	rectfill(2,17,4,32,4)
+	
+	rectfill(98,17,114,32,7)
+	rectfill(116,17,121,32,7)
+	rectfill(123,17,125,32,4)
+	
+	rect(31,17,96,32,7)
+	print("\^t\^wcleared!",34,20,7)
+	
+	line(0,35,127,35,4)
+	
+	--bonus
+	rectfill(0,36,127,69,9)
+	line(0,36,127,36,10)
+	line(0,69,127,69,4)
+	
+	--divider
+	rectfill(0,70,127,74,9)
+--	line(0,70,127,70,10)
+--	line(0,73,127,73,10)
+	line(0,74,127,74,4)
+	fillp(0xcc33)
+	rectfill(0,70,127,73,148)
+	fillp()
+	
+	--points
+	rectfill(0,75,127,88,9)
+	line(0,89,127,89,4)
+	rectfill(0,90,127,92,1)
+	
+	--frame
+	rect(0,0,127,127,10)
+	rect(1,1,126,126,9)
 end
 
 function upd_win()
