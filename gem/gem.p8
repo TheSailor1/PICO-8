@@ -78,7 +78,7 @@ function _init()
 	
 	--★
 	showmines=false
-	showgems=true
+	showgems=false
 end
 
 function _update60()
@@ -649,30 +649,54 @@ function opentile()
 end--opentile
 
 function checkgems(_t)
-	local p=0
+	local p,pc,ns=0,0,0
+	
 	if (tiles[_t].hasgem=="r") then
 		sfx(59)
 		gems_r+=1
 		p+=1
+		pc=8
+		ns=41
 	elseif (tiles[_t].hasgem=="g") then
 		sfx(59)
 		gems_g+=1
 		p+=1
+		pc=11
+		ns=51
 	elseif (tiles[_t].hasgem=="o") then
 		sfx(59)
 		gems_o+=1
 		p+=1
+		pc=9
+		ns=61
 	end
 	
 	if p>0 then
+		local ox=tiles[_t].id_x
+		local oy=tiles[_t].id_y
+		local nx,ny=0,0
+		
+		if ox<3 then
+			nx=rnd({20,30,40})
+		else
+			nx=rnd({50,60,70,80})
+		end
+		
+		if oy<3 then
+			ny=rnd({10,20,30,40})
+		else
+			ny=rnd({50,60,70,80})
+		end
+		
 		for i=1,p do
 			add(parts,{
-			x=tiles[_t].id_x,
-			y=tiles[_t].id_y,
-			dx=tiles[_t].id_x+rnd({-30,-20,20,30}),
-			dy=tiles[_t].id_y+rnd({-30,-20,20,30}),
+			x=ox,
+			y=ny,
+			dx=nx,
+			dy=ny,
 			r=3,
-			c=rnd({8,9,10}),
+			c=pc,
+			sp=ns,
 			age=0,
 			mage=40
 		})
@@ -1317,7 +1341,8 @@ end
 
 function drw_parts()
 	for p in all(parts) do
-		circfill(p.x,p.y,p.r,p.c)
+--		circfill(p.x,p.y,p.r,p.c)
+		sspr(p.sp,39,10,9,p.x,p.y)
 	end
 end
 
