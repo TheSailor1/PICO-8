@@ -314,12 +314,12 @@ function drw_game()
 	
 	drw_bkg()
 	drw_board()
-	drw_parts()
 	drw_gemboard()
 	drw_scoreboard()
 	drw_diver()
 	drw_cursor()
 	drw_flags()
+	drw_parts()
 	drw_bubbs()
 	
 	rect(0,0,127,127,12)
