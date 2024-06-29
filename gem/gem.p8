@@ -265,6 +265,7 @@ function upd_game()
 	
 	upd_board()
 	upd_parts()
+	upd_bubbs()
 	
 	devspeed+=0.1
 	develop+=devspeed
@@ -319,6 +320,7 @@ function drw_game()
 	drw_diver()
 	drw_cursor()
 	drw_flags()
+	drw_bubbs()
 	
 	rect(0,0,127,127,12)
 	
@@ -340,7 +342,7 @@ function ini_board()
 	
 	tiles={}
 	flags={}
-	
+	bubbs={}
 	
 	cols=8
 	rows=8
@@ -632,6 +634,7 @@ function upd_cursor()
 	
 	if btnp(🅾️) then
 		sfx(58)
+		new_bubbs()
 		flagtile()
 	end
 	
@@ -687,6 +690,8 @@ function checkgems(_t)
 		local ox=curx*size+7
 		local oy=cury*size+7
 		local nx,ny=0,0
+		
+		new_bubbs()
 		
 		for i=1,p do
 			add(parts,{
@@ -1344,6 +1349,11 @@ end
 
 function drw_parts()
 	for p in all(parts) do
+		if p.yspd==0 then
+			pal({1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1})
+			sspr(p.sp,39,10,9,p.x,p.y+3)
+			pal()
+		end
 		sspr(p.sp,39,10,9,p.x,p.y)
 	end
 end
@@ -1353,7 +1363,7 @@ function upd_parts()
 		if p.age<p.mage then
 			p.x+=(p.dx-p.x)/5
 			p.y+=p.yspd
-			if p.y>=p.dy then
+			if p.y>=p.dy+8 then
 				p.yspd=0
 			else
 				p.yspd+=2
@@ -1361,6 +1371,37 @@ function upd_parts()
 			p.age+=1
 		else
 			del(parts,p)
+		end
+	end
+end
+
+function new_bubbs()
+	
+	local r=2+flr(rnd(6))
+	for b=1,r do
+	add(bubbs,{
+			x=86+rnd(30),
+			y=100-rnd(20),
+			yspd=-1,
+			r=rnd({1,3}),
+			c=12
+		})
+	end
+end
+
+function drw_bubbs()
+	for b in all(bubbs) do
+		circ(b.x+sin(t*0.3)*0.9,b.y,b.r,b.c)
+	end
+end
+
+function upd_bubbs()
+	for b in all(bubbs) do
+		b.y+=b.yspd
+		if b.r>0 then
+			b.r-=0.05
+		else
+			del(bubbs,b)
 		end
 	end
 end
