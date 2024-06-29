@@ -114,6 +114,7 @@ function upd_splash()
 		co=0
 		cx=0
 		cpass=0
+		gy=-70
 		_upd=upd_menu
 		_drw=drw_menu
 	end
@@ -138,7 +139,6 @@ function upd_menu()
 	develop+=devspeed
 	develop=min(100,develop)
 	
-	local lyb=76
 	
 	if t>=60 and sf then
 		sy+=(22-sy)/20
@@ -148,9 +148,13 @@ function upd_menu()
 		sf=false
 	end
 	
+	local lyb=76
+	local gyd=96
 	if t>=120 and float then
 		ly+=(lyb-ly)/20
+		gy+=(gyd-gy)/15
 	end
+	
 	
 	if lyb-ly<=0.5 then
 		float=false
@@ -247,9 +251,10 @@ function drw_menu()
 	sspr(0,81,116,28,5,ly)
 	
 	--gems
-	sspr(41,39,10,9,46,98)
-	sspr(51,39,10,9,58,98)
-	sspr(61,39,10,9,70,98)
+	
+	sspr(41,39,10,9,46,gy+cos(t*0.01)*2.9)
+	sspr(51,39,10,9,58,gy+cos((t-12)*0.01)*2.9)
+	sspr(61,39,10,9,70,gy+cos((t-22)*0.01)*2.9)
 	
 	rect(0,0,127,127,7)
 	
