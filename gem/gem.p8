@@ -412,7 +412,9 @@ function ini_board()
 end--ini_board()
 
 function drw_bkg()
-	fadepal((100-develop)/100)
+	if t<100 then
+		fadepal((100-develop)/100)
+	end
 	rectfill(0,90,127,127,1)
 end
 
@@ -490,19 +492,22 @@ function drw_board()
 end--drw_board()
 
 function drw_cursor()
-	local t
-	fadepal((100-develop)/100)
+	if t<100 then
+		fadepal((100-develop)/100)
+	end
 	
-	for t in all(tiles) do
-		if curx*size==t.id_x and
-					cury*size==t.id_y then
+	for tl in all(tiles) do
+		if curx*size==tl.id_x and
+					cury*size==tl.id_y then
 					sspr(23,109,16,18,curx*size,cury*size)
 		end
 	end
 end--drw_cursor()
 
 function drw_gemboard()
-	fadepal((100-develop)/100)
+	if t<100 then
+		fadepal((100-develop)/100)
+	end
 	sspr(66,0,21,14,103,1)
 	
 	sspr(87,0,13,12,103,16)
@@ -533,7 +538,10 @@ function drw_gemboard()
 end
 
 function drw_scoreboard()
-	fadepal((100-develop)/100)
+	if t<100 then
+		fadepal((100-develop)/100)
+	end
+	
 	rrect(6,103,86,20,1)
 	rrect(4,101,86,20,2)
 	
@@ -613,7 +621,9 @@ function drw_scoreboard()
 end
 
 function drw_diver()
-	fadepal((100-develop)/100)
+	if t<100 then
+		fadepal((100-develop)/100)
+	end
 	sspr(8,13,28,14,98,60+(sin(t*0.002)*1.2))
 	sspr(0,29,37,50,91,79+(sin(t*0.005)*2))
 end
@@ -741,7 +751,9 @@ function flagtile()
 end--flagtile
 
 function drw_flags()
-	fadepal((100-develop)/100)
+	if t<100 then
+		fadepal((100-develop)/100)
+	end
 	
 	local f,t
 	for t=1,#tiles do
