@@ -312,6 +312,9 @@ function drw_game()
 	circfill(116,76,2,1)
 	fillp()
 	
+	if shake>0 then
+		doshake()
+	end
 	drw_bkg()
 	drw_board()
 	drw_gemboard()
@@ -321,6 +324,7 @@ function drw_game()
 	drw_flags()
 	drw_parts()
 	drw_bubbs()
+	camera()
 	
 	rect(0,0,127,127,12)
 	
@@ -351,6 +355,10 @@ function ini_board()
 	--cursor
 	curx=3+flr(rnd(2))
 	cury=3+flr(rnd(2))
+	
+	shake=0
+	camx=0
+	camy=0
 	
 	local i,j
 	for i=0,cols-1 do
@@ -633,7 +641,6 @@ function upd_cursor()
 	movecursor()
 	
 	if btnp(🅾️) then
-		sfx(58)
 		new_bubbs()
 		flagtile()
 	end
@@ -651,6 +658,7 @@ function opentile()
 			and not tiles[t].revealed
 			and not tiles[t].flag) then
 				sfx(62)
+				shake=0.06
 				tiles[t].revealed=true
 				if tiles[t].hasmine then
 					krak=true
@@ -718,6 +726,7 @@ function flagtile()
 			and cury*size==tiles[t].id_y) then 
 				if tiles[t].flag then
 					sfx(60)
+					shake=0.04
 					tiles[t].flag=false
 					plrflags+=1
 					local f
@@ -731,6 +740,7 @@ function flagtile()
 				and not tiles[t].flag and
 				plrflags>0 then
 					sfx(61)
+					shake=0.07
 					add(flags,{
 						x=curx*size,
 						y=cury*size
@@ -1073,12 +1083,22 @@ function checkwin()
 				flagtiles+=1
 			end
 		end
+		devspeed=0
+		develop=0
+		t=0
 		_drw=drw_win
 		_upd=upd_win
 	end
 end
 
 function drw_win()
+	
+	if t<100 then
+		fadepal((100-develop)/100)
+	end
+	
+	rectfill(0,0,127,127,6)
+	
 	--top
 	rectfill(0,14,127,35,9)
 	line(0,14,127,14,10)
@@ -1118,9 +1138,7 @@ function drw_win()
 
 	
 	--blue outline
-	for i=0,15 do
-		pal(i,1)
-	end
+	pal({1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1})
 	
 	--red
 	sspr(41,39,10,9,43,50)
@@ -1192,9 +1210,14 @@ function drw_win()
 	--frame
 	rect(0,0,127,127,10)
 	rect(1,1,126,126,9)
+	
 end
 
 function upd_win()
+	devspeed+=0.2
+	develop+=devspeed
+	develop=min(100,develop)
+	
 	if btnp(🅾️) then
 		_init()
 	end
