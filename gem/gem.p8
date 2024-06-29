@@ -11,11 +11,11 @@ __lua__
 
 -- - intro screen
 -- --------------
--- - - animate logo
--- - - animate the sun
 -- - - animate the birds
 -- - - moving clouds (generate)
 -- - - add how to play button
+-- - - highscore
+
 
 -- - gameplay
 -- -------------
@@ -68,7 +68,7 @@ function _init()
 	develop=0
 	devspeed=0
 	
-	
+	hi=0
 	
 	_upd=upd_splash
 	_drw=drw_splash
@@ -263,6 +263,24 @@ function drw_menu()
 		print(t,64-(#t*2),116,6)
 	end
 	
+	local s=tostr("hiscore "..hi)
+	local wd=(#s*6)-14
+	sspr(69,0,3,5,58,1)
+	sspr(69,0,3,5,58+wd-8,1)
+	rrect(55,7,wd,6,1)
+	rrect(55,6,wd,6,2)
+	print(s,60,8,1)
+	print(s,60,9,1)
+	print(s,60,7,9)
+	
+	clip(90,7,8,1)
+	print(s,60,7,10)
+	clip()
+	
+	pset(60,7,10)
+	line(64,7,65,7,10)
+	line(80,7,81,7,10)
+	line(84,7,85,7,10)
 end
 
 function upd_game()
@@ -1049,7 +1067,8 @@ end--movecursor()
 
 function upd_kraken()
 	if btnp(🅾️) then
-		_init()
+		_drw=drw_menu
+		_upd=upd_menu
 	end
 end
 
@@ -1209,6 +1228,10 @@ function drw_win()
 	
 	local newscore=score+f_points+r_points+g_points+o_points
 	
+	if hi<newscore then
+		hi=newscore
+	end
+	
 	print("\^t\^wscore "..newscore,24,81,4)
 	print("\^t\^wscore "..newscore,24,79,7)
 	
@@ -1224,7 +1247,8 @@ function upd_win()
 	develop=min(100,develop)
 	
 	if btnp(🅾️) then
-		_init()
+		_drw=drw_menu
+		_upd=upd_menu
 	end
 end
 -->8
