@@ -723,14 +723,14 @@ function checkgems(_t)
 		local ox=curx*size+7
 		local oy=cury*size+7
 		local nx,ny=0,0
-		
+		local rtbl={}
 		
 		if curx<=2 then
-			nx=ox+rnd({5,10,20,25})
+			rtbl={5,10,20,25}
 		elseif curx>=6 then
-			nx=ox-rnd({5,10,20,25})
+			rtbl={-5,-10,-20,-25}
 		else
-			nx=ox+rnd({-5,-10,15,5,10,15})
+			rtbl={-5,-10,-15,5,10,15}
 		end
 		
 		new_bubbs()
@@ -739,14 +739,14 @@ function checkgems(_t)
 			add(parts,{
 			x=ox,
 			y=oy,
-			dx=nx,
+			dx=ox+rnd(rtbl),
 			dy=oy+rnd(20),
 			yspd=-2+rnd({-1,-2,-3}),
 			r=3,
 			c=pc,
 			sp=ns,
 			age=0,
-			mage=60+rnd(20)
+			mage=60+rnd(40)
 		})
 		end
 		p=0
@@ -1434,7 +1434,6 @@ function upd_parts()
 			p.age+=1
 		else
 			del(parts,p)
-			shake=0.1
 		end
 	end
 end
