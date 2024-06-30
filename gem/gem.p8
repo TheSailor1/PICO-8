@@ -348,6 +348,7 @@ function drw_game()
 	drw_diver()
 	drw_cursor()
 	drw_flags()
+	drw_wflags()
 	drw_parts()
 	drw_bubbs()
 	
@@ -372,6 +373,9 @@ function ini_board()
 	tiles={}
 	flags={}
 	bubbs={}
+	
+	fly=0
+	
 	
 	cols=8
 	rows=8
@@ -478,7 +482,7 @@ function drw_board()
 		if t<100 then
 			fadepal((100-develop)/100)
 		end
-		sspr(tl.spx,tl.spy,12,13,2+tl.id_x,2+tl.id_y)
+		sspr(tl.spx,tl.spy,12,12,2+tl.id_x,2+tl.id_y)
 	
 	local _c
 		if tl.revealed and
@@ -774,37 +778,39 @@ function flagtile()
 				and not tiles[t].flag and
 				plrflags>0 then
 					sfx(61)
-					shake=0.07
 					add(flags,{
 						x=curx*size,
-						y=cury*size
+						y=cury*size-40,
+						dy=cury*size
 						})
 					tiles[t].flag=true
 					plrflags-=1
+					shake=0.07
 				end
 			end
 	end
 end--flagtile
 
 function drw_flags()
-	if t<100 then
-		fadepal((100-develop)/100)
+	for f in all(flags) do
+		if f.y~=f.dy then
+			f.y+=10
+		end
+		sspr(39,109,9,10,f.x+4,f.y+3)
 	end
-	
-	local f,t
-	for t=1,#tiles do
-		for f=1,#flags do
-			if flags[f].x==tiles[t].id_x and
-			flags[f].y==tiles[t].id_y then
-				if tiles[t].revealed and tiles[t].flag then
-					sspr(36,12,9,10,flags[f].x+4,flags[f].y+3)
-				else
-					sspr(39,109,9,10,flags[f].x+4,flags[f].y+3)
-				end
+end--drw_flags()
+
+function drw_wflags()
+	for f in all(flags) do
+		for t in all(tiles) do
+			if t.flag and t.revealed 
+			and t.id_x==f.x
+			and t.id_y==f.y then
+				sspr(36,12,9,10,f.x+4,f.y+3)
 			end
 		end
-	end--for
-end--drw_flags()
+	end
+end--drw_wflags()
 
 function checkaround(_t)
 	local u,d,l,r,tl,tr,bl,br
