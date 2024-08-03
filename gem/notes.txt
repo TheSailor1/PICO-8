@@ -1,0 +1,26 @@
+GEM DREDGING
+------------
+
+-- General --
+-------------
+1) Better music for different screens
+		- Current music is very doom and gloom feeling
+
+
+-- Playtesting --
+-----------------
+
+[X]	1) Allow button switching (o/x)
+[X]	2) Exit screens with X
+[]	3) Add tutorial?
+[]	4) Add play time to win screen
+[]	5) Gameplay - First clicked tile must never be a
+							kraken tile. 
+							No krak tiles are placed UNTIL the
+							player opens the first tile.
+[]	6) Gameplay - Autoclear blank tiles around other 
+							blank tiles.
+[]	7) Gameplay - (Optional) Flag clear
+[]	8) Gameplay - Can a game end without placing
+									flags?
+
