@@ -10,17 +10,25 @@ GEM DREDGING
 -- Playtesting --
 -----------------
 
-[X]	1) Allow button switching (o/x)
-[X]	2) Exit screens with X
-[]	3) Add tutorial?
-[]	4) Add play time to win screen
-[]	5) Gameplay - First clicked tile must never be a
+[X]	 Allow button switching (o/x)
+[X]	 Exit screens with X
+[]	Add play time to win screen
+[]  BATTLE SCENE
+		[] A cursor highlighting who's turn
+		[] Player can block an attack (void if RNG is a miss from enemy)
+			- use a timed strategy
+		[] Visualise a hit/miss (Hitpoints)
+			- [] Player
+			- [] Enemy
+
+[]	Add tutorial?
+[]	Gameplay - First clicked tile must never be a
 							kraken tile. 
 							No krak tiles are placed UNTIL the
 							player opens the first tile.
-[]	6) Gameplay - Autoclear blank tiles around other 
+[]	Gameplay - Autoclear blank tiles around other 
 							blank tiles.
-[]	7) Gameplay - (Optional) Flag clear
-[]	8) Gameplay - Can a game end without placing
+[]	Gameplay - (Optional) Flag clear
+[]	Gameplay - Can a game end without placing
 									flags?
 

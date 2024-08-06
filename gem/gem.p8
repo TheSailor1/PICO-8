@@ -164,6 +164,7 @@ function startgame()
 	sfx(58)
 	music(-1,1000)
 	wait=60
+	hp=maxhp
 end
 
 function drw_menu()
@@ -319,7 +320,7 @@ function upd_game()
 				wait-=1
 			else
 				trans=127
-				shake=30
+				shake=5
 			end
 		elseif trans<=-220 then
 			trans=nil
@@ -327,6 +328,7 @@ function upd_game()
 			devspeed=0
 			develop=0
 			t=0
+			bsel=1
 			_upd=upd_kraken
 			_drw=drw_kraken
 		else
@@ -344,6 +346,7 @@ function upd_game()
 		
 		upd_cursor()
 	end
+	
 end
 
 function drw_game()
@@ -383,9 +386,6 @@ function drw_game()
 	drw_parts()
 	drw_bubbs()
 	
-	--★
-	debug[1]=tostr(#bubbs)
-	
 	if (krak) camera()
 	
 	
@@ -399,6 +399,8 @@ function drw_game()
 			fillp(░)
 			rectfill(0,trans,127,127,2)
 			fillp()
+			print("\^t\^wbattle!",36,68,1)
+			print("\^t\^wbattle!",36,66,1)
 			print("\^t\^wbattle!",36,64,9)
 			end
 		end
@@ -421,6 +423,7 @@ function ini_board()
 	score=0
 	opentiles=0
 	flagtiles=0
+	battletiles=0
 	gtimer=0
 	timer=0
 	
@@ -757,6 +760,7 @@ function opentile()
 					wait=60
 					krak=true
 					enhp=ens[1]
+					battletiles+=1
 				else
 					sfx(62)
 					shake=0.1
@@ -1153,12 +1157,15 @@ end--movecursor()
 
 function upd_kraken()
 	t+=1
+	wait+=1
+	
 	devspeed+=0.1
 	develop+=devspeed
 	develop=min(100,develop)
 	
 	upd_bubbs()
 	
+	enatk()
 	killen()
 	
 	if btnp(⬆️) then
@@ -1188,9 +1195,10 @@ function drw_kraken()
 	cls(1)
 	fadepal((100-develop)/100)
 	
-	if t%20==0 then
+	if t%50==0 then
 		big_bubbs()
 	end
+	
 	
 	fillp(0x3c3c)
 	rectfill(1,1,126,6,18)
@@ -1200,6 +1208,12 @@ function drw_kraken()
 	rectfill(1,10,126,15,18)
 	fillp()
 	
+	fillp(░)
+	circfill(20,65,14,5)
+	circfill(63,68,12,5)
+	circfill(93,58,8,5)
+	circfill(113,68,8,5)
+	fillp()
 	drw_bubbs()
 	
 	rectfill(0,80,127,104,13)
@@ -1209,6 +1223,8 @@ function drw_kraken()
 	circfill(85,80,12,13)
 	circfill(100,80,8,13)
 	circfill(120,80,8,13)
+	
+	drw_fighter()
 	
 	?sp_krak,64,12+sin(t*0.008)*2.2
 	?sp_dredge,12,48+sin(t*0.005)*2
@@ -1246,15 +1262,21 @@ function drw_kraken()
 		rectfill(78+((i-1)*adj),116,82+((i-1)*adj),122,1)
 	end
 	
-	print("attack",8,109,7)
-	print("heal",8,117,7)
-	print("fright",34,117,7)
+	local c1,c2,c3=7,7,7
+	if (bsel==1) c1=14
+	if (bsel==2) c2=11
+	if (bsel==3) c3=9
+	
+	print("attack",8,109,c1)
+	print("heal",8,117,c2)
+	print("fright",34,117,c3)
 	
 	print(gems_r,79,117,14)
 	print(gems_g,97,117,11)
 	print(gems_o,115,117,9)
 	
 	sspr(120,102,6,7,bselpos[bsel][1]+sin(t*0.02)*0.3,bselpos[bsel][2])
+	
 	
 	rect(0,0,127,127,8)
 end
@@ -1459,14 +1481,6 @@ function orrect(_x,_y,_w,_h,_c1,_c2)
 	line(_x-3,_y+_h+3,_x+_w+3,_y+_h+3,1)
 	line(_x-3,_y+_h+4,_x+_w+3,_y+_h+4,1)
 end
-
-function drw_popup(_t,_x,_y,_h,_c1,_c2)
-	_w=#_t*4+2
-	orrect(_x,_y,_w,_h,_c1,_c2)
---	orrect(48,98,38,8,10,9)
-	sspr(71,39,8,8,_x+_w-6,_y+_h)
-	print(_t,_x,_y+2,2)
-end
 -->8
 --ui
 
@@ -1613,14 +1627,14 @@ function new_bubbs()
 end
 
 function big_bubbs()
-	local amt=10+flr(rnd(30))
+	local amt=18+flr(rnd(20))
 	for b=1,amt do
 		add(bubbs,{
 			x=rnd(127),
-			y=88,
-			yspd=rnd({-1,-0.5,-0.2}),
-			r=rnd(14),
-			c=rnd({12,13}),
+			y=75+rnd(20),
+			yspd=rnd(1)*-1,
+			r=rnd(6),
+			c=rnd({5,13}),
 			typ=2
 		})
 	end
@@ -1639,14 +1653,18 @@ end
 function upd_bubbs()
 	for b in all(bubbs) do
 		b.y+=b.yspd
-		if b.r>0 then
-			if b.typ==1 then
+		if b.typ==1 then
+			if b.r>0 then
 				b.r-=0.05
-			elseif b.typ==2 then
-				b.r-=0.24
+			else
+				del(bubbs,b)
 			end
-		else
-			del(bubbs,b)
+		elseif b.typ==2 then
+			if b.y>-20 then
+				b.r-=0.04
+			else
+				del(bubbs,b)
+			end
 		end
 	end
 end
@@ -1663,14 +1681,23 @@ bselpos={{34,108},{24,116},{58,116}}
 
 ens={30,20}
 enhp=0
-hp=20
+hp=0
 maxhp=30
 batturn=1
+enturn=false
+
+x1=22
+y1=90
+x2=100
+y2=30
+fx,dx=x1,x1
+fy,dy=y1,y1
+
 --★
 
 function battcmd()
 	if not bswap then
-		if btnp(❎) then
+		if btnp(❎) and batturn==1 then
 			if bsel==1 then
 				if enhp>0 then
 				--attack creature
@@ -1684,7 +1711,7 @@ function battcmd()
 			elseif bsel==2 and hp<maxhp then
 				--heal dredger
 				if gems_g>0 then
-					hp+=5
+					hp+=maxhp/2
 					gems_g-=1
 				end
 			elseif bsel==3 then
@@ -1694,13 +1721,23 @@ function battcmd()
 					gems_o-=1
 				end
 			end
-			batturn+=1
+			nextturn()
 		end
 	else
-		if btnp(🅾️) then
-		
+		if btnp(🅾️) and batturn==1 then
+			--do something
 		end
 	end
+end
+
+function enatk()
+	if batturn==2 and canatt(0.1) then
+		if hp>0 then
+			hp-=5
+			wait=0
+			nextturn()
+		end
+end
 end
 
 function killen()
@@ -1708,6 +1745,49 @@ function killen()
 		bubbs={}
 		_upd=upd_game
 		_drw=drw_game
+	end
+end
+
+function canatt(r)
+	debug[1]=wait
+	if enturn and rnd()<r then
+		enturn=false
+		return true
+	end
+	return false
+end
+
+function drw_fighter()
+	
+	if batturn==2 then
+		dx=x2
+		dy=y2
+	else
+		dx=x1
+		dy=y1
+	end
+	
+	
+	fx+=(dx-fx)/10
+	fy+=(dy-fy)/10
+	
+	circfill(fx,fy,13,6)
+	circfill(fx,fy,12,7)
+	circfill(fx,fy,10,2)
+	circfill(fx,fy,8,7)
+	circfill(fx,fy,6,2)
+	circfill(fx,fy,4,7)
+	circfill(fx,fy,2,8)
+	
+end
+
+function nextturn()
+	if wait>=60 then
+		if batturn==2 then
+			batturn=1
+		else
+			batturn=2
+		end
 	end
 end
 __gfx__
