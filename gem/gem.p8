@@ -31,8 +31,8 @@ function _init()
 	}
 	
 	t=0
-	trans=nil
-	wait=nil
+	trans=0
+	wait=0
 	shake=0
 	develop=0
 	devspeed=0
@@ -145,7 +145,7 @@ function upd_menu()
 		startgame()
 	end
 	
-	if wait~=nil then
+	if wait>0 then
 		wait-=1
 		
 		if wait<=0 then
@@ -315,20 +315,22 @@ function upd_game()
 	checkwin()
 	
 	if krak then
-		if trans==nil then
-			if wait >=0 then
+		if trans==0 then
+			if wait>=0 then
 				wait-=1
 			else
 				trans=127
 				shake=5
 			end
 		elseif trans<=-220 then
-			trans=nil
+			trans=0
+			wait=0
 			krak=false
 			devspeed=0
 			develop=0
 			t=0
 			bsel=1
+			shake=0
 			_upd=upd_kraken
 			_drw=drw_kraken
 		else
@@ -405,6 +407,7 @@ function drw_game()
 			end
 		end
 	end
+	debug[1]=hp
 end
 
 function butt_swap()
@@ -757,7 +760,6 @@ function opentile()
 				if tiles[t].hasmine then
 					sfx(57)
 					shake=10
-					wait=60
 					krak=true
 					enhp=ens[1]
 					battletiles+=1
@@ -1157,7 +1159,10 @@ end--movecursor()
 
 function upd_kraken()
 	t+=1
-	wait+=1
+	
+	if wait>0 then
+		wait-=1
+	end
 	
 	devspeed+=0.1
 	develop+=devspeed
@@ -1165,7 +1170,11 @@ function upd_kraken()
 	
 	upd_bubbs()
 	
-	enatk()
+	if en_att and not plr_turn then
+		en_atk()
+	end
+	
+	upd_battle()
 	killen()
 	
 	if btnp(⬆️) then
@@ -1184,7 +1193,7 @@ function upd_kraken()
 end--/
 
 function closekrak()
-	wait=nil
+	wait=0
 	music(0,4000)
 	_drw=drw_menu
 	_upd=upd_menu
@@ -1224,10 +1233,18 @@ function drw_kraken()
 	circfill(100,80,8,13)
 	circfill(120,80,8,13)
 	
+	
+	if shake>0 then
+		doshake(1)
+	end
+	
 	drw_fighter()
 	
 	?sp_krak,64,12+sin(t*0.008)*2.2
-	?sp_dredge,12,48+sin(t*0.005)*2
+	
+	?sp_dredge,10,48+sin(t*0.005)*2
+	
+	camera()
 	
 	print("krak",44,32,5)
 	print("krak",44,31,7)
@@ -1279,6 +1296,7 @@ function drw_kraken()
 	
 	
 	rect(0,0,127,127,8)
+	debug[2]=hp
 end
 
 function checkwin()
@@ -1439,7 +1457,7 @@ function upd_win()
 end
 
 function gotomenu()
-	wait=nil
+	wait=0
 	music(0,4000)
 	_drw=drw_menu
 	_upd=upd_menu
@@ -1627,13 +1645,13 @@ function new_bubbs()
 end
 
 function big_bubbs()
-	local amt=18+flr(rnd(20))
+	local amt=4+flr(rnd(4))
 	for b=1,amt do
 		add(bubbs,{
 			x=rnd(127),
 			y=75+rnd(20),
-			yspd=rnd(1)*-1,
-			r=rnd(6),
+			yspd=rnd(0.3)*-1,
+			r=flr(rnd(8)),
 			c=rnd({5,13}),
 			typ=2
 		})
@@ -1645,7 +1663,7 @@ function drw_bubbs()
 		if b.typ==1 then
 			circ(b.x+sin(t*0.3)*0.9,b.y,b.r,b.c)
 		elseif b.typ==2 then
-			circ(b.x+sin(t*0.3)*0.9,b.y,b.r,b.c)
+			circ(b.x+sin(t*0.02)*1.2,b.y,b.r,b.c)
 		end
 	end
 end
@@ -1660,8 +1678,8 @@ function upd_bubbs()
 				del(bubbs,b)
 			end
 		elseif b.typ==2 then
-			if b.y>-20 then
-				b.r-=0.04
+			if b.r>0 then
+				b.r-=0.02
 			else
 				del(bubbs,b)
 			end
@@ -1678,13 +1696,14 @@ sp_dredge="⁶-b⁶x8⁶y8⁶-#ᶜ1⁶.\0\0\0\0ᵉ□\"D⁸⁶-#ᶜ6⁶.\0\0\0�
 
 bsel=1
 bselpos={{34,108},{24,116},{58,116}}
+plr_turn=true
+en_att=false
 
 ens={30,20}
 enhp=0
 hp=0
 maxhp=30
-batturn=1
-enturn=false
+pwr=ens[1]/2
 
 x1=22
 y1=90
@@ -1697,15 +1716,16 @@ fy,dy=y1,y1
 
 function battcmd()
 	if not bswap then
-		if btnp(❎) and batturn==1 then
+		if btnp(❎) and plr_turn then
 			if bsel==1 then
 				if enhp>0 then
 				--attack creature
+					shake=0.2
 					if gems_r>0 then
-						enhp-=10
+						enhp-=pwr
 						gems_r-=1
 					else
-						enhp-=5
+						enhp-=pwr/2
 					end
 				end
 			elseif bsel==2 and hp<maxhp then
@@ -1721,45 +1741,81 @@ function battcmd()
 					gems_o-=1
 				end
 			end
-			nextturn()
+			plr_turn=false
+			en_att=true
+			wait=180
 		end
 	else
-		if btnp(🅾️) and batturn==1 then
+		if btnp(🅾️) and plr_turn then
 			--do something
 		end
 	end
 end
 
-function enatk()
-	if batturn==2 and canatt(0.1) then
-		if hp>0 then
+function en_atk()
+	if wait<=120 then
+		if canatt(0.4) and en_att then
 			hp-=5
-			wait=0
-			nextturn()
+			shake=5
 		end
+		en_att=false
+		plr_turn=true
+	end
 end
+
+function killplr()
+	en_att=false
+	_upd=upd_gameover
+	_drw=drw_gameover
+end
+
+function upd_gameover()
+	if not bswap then 
+		if btnp(❎) then
+			hp=maxhp
+			_upd=upd_menu
+			_drw=drw_menu
+		end
+	else
+		if btnp(🅾️) then
+			hp=maxhp
+			_upd=upd_menu
+			_drw=drw_menu
+		end
+	end
+end
+
+function drw_gameover()
+	cls(8)
+	cprint("d e d",64,7)
 end
 
 function killen()
 	if enhp<=0 then
 		bubbs={}
+		plr_turn=true
+		wait=0
+		krak=false
 		_upd=upd_game
 		_drw=drw_game
 	end
 end
 
 function canatt(r)
-	debug[1]=wait
-	if enturn and rnd()<r then
-		enturn=false
+	if rnd()<r then
 		return true
 	end
 	return false
 end
 
+function upd_battle()
+	if hp<=0 then 
+		killplr()
+	end
+end
+
 function drw_fighter()
-	
-	if batturn==2 then
+	if plr_turn then
 		dx=x2
 		dy=y2
 	else
@@ -1779,16 +1835,6 @@ function drw_fighter()
 	circfill(fx,fy,4,7)
 	circfill(fx,fy,2,8)
 	
-end
-
-function nextturn()
-	if wait>=60 then
-		if batturn==2 then
-			batturn=1
-		else
-			batturn=2
-		end
-	end
 end
 __gfx__
 00544455550000544455550000544455550000555555550000511111150000770000022200000000022200000000111100000000011110000000001111000000
@@ -1902,15 +1948,15 @@ __gfx__
 00111111111111111111100000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111100000000011100
 68888d555500051111115000000000a9000000001111111000000000000000000000000000000000000000000000000000000000000000000000000000000000
 68a80d51500051222222150000000aa9900000018888888100000000000000000000000000000000000000000000000000000000000000000000000000000000
-78800155000512222222212000aaaaaaaaaa00018aaa841100000000000000000000000000000000000000000000000000000000000000000000000000000000
+78800155000512282822212000aaaaaaaaaa00018aaa841100000000000000000000000000000000000000000000000000000000000000000000000000000000
 7000010000012222222222100a1111111111a0018a8a411000000000000000000000000000000000000000000000000000000000000000000000000000000000
 70000100000122a8828a22100a1111111110a00148a4110000000000000000000000000000000000000000000000000000000000000000000000000000000000
 000000000001228a82882210aa1000000000aa014881100000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000122888222221aaa1000000000aaa17111000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0000000000012222222222149a1000000000a9417100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000122222282221149100000000094117100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000512222222215014100000000041011100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000051222222150004100000000041000007100000077000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000001a2888222281aaa1000000000aaa17111000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000001a222822228149a1000000000a9417100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000182222282281149100000000094117100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000051a282822a15014100000000041011100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000005188888a150004100000000041000007100000077000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000005111111500009100000000041005599655000019900000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000009100000000041000557650005576000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000001999999944410000577500055770000000000000000000000000000000000000000000000000000000000000000000000000000
