@@ -325,12 +325,12 @@ function upd_game()
 		elseif trans<=-220 then
 			trans=0
 			wait=0
-			krak=false
 			devspeed=0
 			develop=0
 			t=0
 			bsel=1
 			shake=0
+			en_hp=ens[en_cnt]
 			_upd=upd_kraken
 			_drw=drw_kraken
 		else
@@ -386,7 +386,6 @@ function drw_game()
 	drw_scoreboard()
 	drw_diver()
 	drw_parts()
-	drw_bubbs()
 	
 	if (krak) camera()
 	
@@ -407,7 +406,28 @@ function drw_game()
 			end
 		end
 	end
-	debug[1]=hp
+	
+	drw_bubbs()
+	
+end
+
+function upd_gameover()
+	if not bswap then
+		if btnp(❎) then
+			_upd=upd_menu
+			_drw=drw_menu
+		end
+	else
+		if btnp(🅾️) then
+			_upd=upd_menu
+			_drw=drw_menu
+		end
+	end
+end
+
+function drw_gameover()
+	cls(8)
+	cprint("ded",45,7)
 end
 
 function butt_swap()
@@ -732,7 +752,7 @@ function upd_cursor()
 		
 		if bswap then
 			if btnp(❎) then
-				new_bubbs()
+				new_bubbs(86,100)
 				flagtile()
 			elseif btnp(🅾️) then
 				opentile()
@@ -741,7 +761,7 @@ function upd_cursor()
 			if btnp(❎) then
 				opentile()
 			elseif btnp(🅾️) then
-				new_bubbs()
+				new_bubbs(86,100)
 				flagtile()
 			end
 		end
@@ -757,6 +777,7 @@ function opentile()
 			and not tiles[t].revealed
 			and not tiles[t].flag) then
 				tiles[t].revealed=true
+				new_bubbs(curx*size,cury*size)
 				if tiles[t].hasmine then
 					sfx(57)
 					shake=10
@@ -812,7 +833,7 @@ function checkgems(_t)
 			rtbl={-5,-10,-15,5,10,15}
 		end
 		
-		new_bubbs()
+		new_bubbs(86,100)
 		
 		for i=1,p do
 			add(parts,{
@@ -1160,36 +1181,13 @@ end--movecursor()
 function upd_kraken()
 	t+=1
 	
-	if wait>0 then
-		wait-=1
-	end
 	
 	devspeed+=0.1
 	develop+=devspeed
 	develop=min(100,develop)
 	
 	upd_bubbs()
-	
-	if en_att and not plr_turn then
-		en_atk()
-	end
-	
 	upd_battle()
-	killen()
-	
-	if btnp(⬆️) then
-			bsel-=1
-			if bsel==0 then
-				bsel=3
-			end
-	elseif btnp(⬇️) then
-		bsel+=1
-		if bsel==4 then
-			bsel=1
-		end
-	end
-	
-	battcmd()
 end--/
 
 function closekrak()
@@ -1208,6 +1206,7 @@ function drw_kraken()
 		big_bubbs()
 	end
 	
+	drw_bigbubbs()
 	
 	fillp(0x3c3c)
 	rectfill(1,1,126,6,18)
@@ -1220,10 +1219,9 @@ function drw_kraken()
 	fillp(░)
 	circfill(20,65,14,5)
 	circfill(63,68,12,5)
-	circfill(93,58,8,5)
-	circfill(113,68,8,5)
+	circfill(93,58,10,5)
+	circfill(113,68,9,5)
 	fillp()
-	drw_bubbs()
 	
 	rectfill(0,80,127,104,13)
 	circfill(10,80,10,13)
@@ -1238,23 +1236,60 @@ function drw_kraken()
 		doshake(1)
 	end
 	
-	drw_fighter()
+	drw_target()
 	
-	?sp_krak,64,12+sin(t*0.008)*2.2
+	local hpcol1,hpcol2=9,9
+	if en_hit then
+		if hitcnt>0 then
+			hitcnt-=1
+			eoff=rnd({-5,-3,3,5,})
+			hpcol2=rnd({7,8,1,2})
+		else
+			en_hit=false
+			hitcnt=0
+		end
+	else
+		eoff=0
+	end
+	if plr_hit then
+		if hitcnt>0 then
+			hitcnt-=1
+			poff=rnd({-5,-3,3,5,})
+			hpcol1=rnd({7,8,1,2})
+		else
+			plr_hit=false
+			hitcnt=0
+		end
+	else
+		poff=0
+	end
 	
-	?sp_dredge,10,48+sin(t*0.005)*2
+	if (en_ded) mov_en+=0.5
+	?sp_krak,64+eoff,12+sin(t*0.008)*2.2-mov_en
+	 
+	if (plr_ded) mov_plr+=1
+	?sp_dredge,10+poff,mov_plr+48+sin(t*0.005)*2
 	
+	if hitcnt>0 then
+		if plr_turn then
+			new_bubbs(30,90)
+		else
+			new_bubbs(60,30)
+		end
+	end
+	
+	drw_bubbs()
 	camera()
 	
 	print("krak",44,32,5)
 	print("krak",44,31,7)
-	rect(29,22,29+ens[1]+2,28,2)
-	rectfill(30,23,30+enhp,27,9)
+	rect(58,22,58-ens[en_cnt]-2,28,2)
+	rectfill(57,23,57-en_hp,27,hpcol2)
 	
 	print("dredger",66,96,1)
 	print("dredger",66,95,7)
 	rect(83,86,83+maxhp+2,92,2)
-	rectfill(84,87,84+hp,91,9)
+	rectfill(84,87,84+hp,91,hpcol1)
 	
 	rectfill(0,105,127,127,2)
 	
@@ -1294,9 +1329,8 @@ function drw_kraken()
 	
 	sspr(120,102,6,7,bselpos[bsel][1]+sin(t*0.02)*0.3,bselpos[bsel][2])
 	
-	
 	rect(0,0,127,127,8)
-	debug[2]=hp
+	
 end
 
 function checkwin()
@@ -1309,6 +1343,8 @@ function checkwin()
 		devspeed=0
 		develop=0
 		t=0
+		en_cnt=1
+		
 		_drw=drw_win
 		_upd=upd_win
 	end
@@ -1630,12 +1666,12 @@ function upd_parts()
 	end
 end
 
-function new_bubbs()
+function new_bubbs(_x,_y)
 	local amt=2+flr(rnd(6))
 	for b=1,amt do
 	add(bubbs,{
-			x=86+rnd(30),
-			y=100-rnd(20),
+			x=_x+rnd(30),
+			y=_y-rnd(20),
 			yspd=-1,
 			r=rnd({1,3}),
 			c=12,
@@ -1662,11 +1698,18 @@ function drw_bubbs()
 	for b in all(bubbs) do
 		if b.typ==1 then
 			circ(b.x+sin(t*0.3)*0.9,b.y,b.r,b.c)
-		elseif b.typ==2 then
+		end
+	end
+end
+
+function drw_bigbubbs()
+	for b in all(bubbs) do
+		if b.typ==2 then
 			circ(b.x+sin(t*0.02)*1.2,b.y,b.r,b.c)
 		end
 	end
 end
+
 
 function upd_bubbs()
 	for b in all(bubbs) do
@@ -1694,17 +1737,29 @@ sp_dredge="⁶-b⁶x8⁶y8⁶-#ᶜ1⁶.\0\0\0\0ᵉ□\"D⁸⁶-#ᶜ6⁶.\0\0\0�
 -->8
 --battle sys
 
+--menu select
 bsel=1
 bselpos={{34,108},{24,116},{58,116}}
-plr_turn=true
-en_att=false
 
-ens={30,20}
-enhp=0
+-- initial variables
+ens={30,10}
+en_hp=0
+en_cnt=1
 hp=0
 maxhp=30
-pwr=ens[1]/2
+plr_ded=false
+en_ded=false
+mov_plr=0
+mov_en=0
 
+--hit marker
+en_hit=false
+eoff=0
+hitcnt=0
+plr_hit=false
+poff=0
+
+--pos of target 
 x1=22
 y1=90
 x2=100
@@ -1713,128 +1768,185 @@ fx,dx=x1,x1
 fy,dy=y1,y1
 
 --★
+plr_turn=true
 
-function battcmd()
-	if not bswap then
-		if btnp(❎) and plr_turn then
-			if bsel==1 then
-				if enhp>0 then
-				--attack creature
-					shake=0.2
-					if gems_r>0 then
-						enhp-=pwr
-						gems_r-=1
-					else
-						enhp-=pwr/2
-					end
-				end
-			elseif bsel==2 and hp<maxhp then
-				--heal dredger
-				if gems_g>0 then
-					hp+=maxhp/2
-					gems_g-=1
-				end
-			elseif bsel==3 then
-				--scare creature away
-				if gems_o>0 then
-					enhp=0
-					gems_o-=1
-				end
-			end
-			plr_turn=false
-			en_att=true
-			wait=180
-		end
-	else
-		if btnp(🅾️) and plr_turn then
-			--do something
-		end
-	end
-end
-
-function en_atk()
-	if wait<=120 then
-		if canatt(0.4) and en_att then
-			hp-=5
-			shake=5
-		end
-		en_att=false
-		plr_turn=true
-	end
-end
-
-function killplr()
-	en_att=false
-	_upd=upd_gameover
-	_drw=drw_gameover
-end
-
-function upd_gameover()
-	if not bswap then 
-		if btnp(❎) then
-			hp=maxhp
-			_upd=upd_menu
-			_drw=drw_menu
-		end
-	else
-		if btnp(🅾️) then
-			hp=maxhp
-			_upd=upd_menu
-			_drw=drw_menu
-		end
-	end
-end
 
 function drw_gameover()
 	cls(8)
 	cprint("d e d",64,7)
 end
 
-function killen()
-	if enhp<=0 then
-		bubbs={}
-		plr_turn=true
-		wait=0
-		krak=false
-		_upd=upd_game
-		_drw=drw_game
-	end
-end
 
-function canatt(r)
-	if rnd()<r then
-		return true
+function drw_target()
+	if hp>0 and en_hp>0 then
+		if plr_turn then
+			if bsel~=2 then
+				dx=x2
+				dy=y2
+			else
+				dx=x1
+				dy=y1
+			end
+		else
+			dx=x1
+			dy=y1
+		end
+		
+		fx+=(dx-fx)/10
+		fy+=(dy-fy)/10
+		
+		circfill(fx,fy,13,6)
+		circfill(fx,fy,12,7)
+		circfill(fx,fy,10,2)
+		circfill(fx,fy,8,7)
+		circfill(fx,fy,6,2)
+		circfill(fx,fy,4,7)
+		circfill(fx,fy,2,8)
 	end
-	return false
 end
 
 function upd_battle()
-	if hp<=0 then 
-		killplr()
+	--timer
+	if wait>0 then
+		wait-=1
+	else
+		wait=0
+	end
+	
+	
+	--plr health
+	if hp>0 then
+		--plr selecting
+		plr_choosing()
+		--enemy
+		en_action()
+		backtogame()
+	else
+		--game over
+		plr_ded=true
+		en_cnt=1
+		isgameover()
 	end
 end
 
-function drw_fighter()
-	if plr_turn then
-		dx=x2
-		dy=y2
-	else
-		dx=x1
-		dy=y1
+function isgameover()
+	if plr_ded then
+		if wait<=0 then
+			mov_plr=0
+			mov_en=0
+			plr_ded=false
+			en_ded=false
+			_upd=upd_gameover
+			_drw=drw_gameover
+		end
 	end
-	
-	
-	fx+=(dx-fx)/10
-	fy+=(dy-fy)/10
-	
-	circfill(fx,fy,13,6)
-	circfill(fx,fy,12,7)
-	circfill(fx,fy,10,2)
-	circfill(fx,fy,8,7)
-	circfill(fx,fy,6,2)
-	circfill(fx,fy,4,7)
-	circfill(fx,fy,2,8)
-	
+end
+
+
+function en_action()
+	if not plr_turn then
+		if wait<=0 then
+			if rnd()<0.5 then
+				attack()
+			end
+		end
+	end
+end
+
+function plr_choosing()
+	--select command
+	if plr_turn then
+		if btnp(⬆️) then
+			bsel-=1
+			if bsel==0 then
+				bsel=3
+			end
+		elseif btnp(⬇️) then
+			bsel+=1
+			if bsel==4 then
+				bsel=1
+			end
+		end
+		
+		if not bswap then
+			if btnp(❎) then
+				chosen_action(bsel)
+			end
+		else
+			if btnp(🅾️) then
+				chosen_action(bsel)
+			end
+		end--bswap
+	end--plr_turn
+end
+
+function chosen_action(b)
+	if b==1 then
+		wait=40
+		attack()
+	elseif b==2 then
+		wait=40
+		heal()
+	elseif b==3 then
+		wait=40
+		frighten()
+	end
+end
+
+function attack()
+	if plr_turn then
+		sfx(56)
+		local pwr=1
+		if gems_r>0 then
+			gems_r-=1
+			pwr=2
+		end
+		en_hp-=(ens[en_cnt]/4)*pwr
+		en_hit=true
+		hitcnt=7
+	--enemy health
+	if en_hp<=0 then
+		sfx(55)
+		krak=false
+		en_ded=true
+		wait=120
+		backtogame()
+		return
+	end
+		plr_turn=false
+	else
+		sfx(56)
+		hp-=maxhp/6
+		plr_hit=true
+		hitcnt=7
+		if hp<=0 then
+			plr_ded=true
+			wait=120
+			shake=12
+		end
+		plr_turn=true
+	end
+end
+
+function heal()
+	if gems_g>0 then
+		hp=maxhp
+		gems_g-=1
+		plr_turn=false
+		bsel=1
+		wait=60
+		new_bubbs(30,90)
+	end
+end
+
+function backtogame()
+	if wait<=0 and not krak then
+		mov_en=0
+		en_ded=false
+		en_cnt+=1
+		_upd=upd_game
+		_drw=drw_game
+	end
 end
 __gfx__
 00544455550000544455550000544455550000555555550000511111150000770000022200000000022200000000111100000000011110000000001111000000
@@ -2150,8 +2262,8 @@ d51e0000000140001402013040140301406011060110601103012000120001202013040130301206
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00070000000001e0501c3501b0502a050263501f05026050360503335000050251501d150171500f1500915004150021500105001050000000000000000000000000000000000000000000000000000000000000
+000200003d2503d25026250302503e2503f6503f6500065007650000501e6501e6501e65000050000501c65008650056500265000050000500000000000000000000000000000000000000000000000000000000
 000600003e6503e6503e6503f650353502f35029350243501f3501a35016350123500e3500b350073500535001350003500000000000000000000000000000000000000000000000000000000000000000000000
 0103000030733305000e1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 79060000240361203611506147060e7360a736155060b70624506120360d5361353622036145360d1360f13612136357360000600006000060000600006000060000600006000060000600006000060000600006
