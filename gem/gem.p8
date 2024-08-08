@@ -314,6 +314,7 @@ function upd_game()
 	
 	checkwin()
 	
+	checkforbattle()
 	if krak then
 		if trans==0 then
 			if wait>=0 then
@@ -1064,6 +1065,7 @@ function checkaround2(_t)
 	end
 	if tiles[u].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 	
 	--below _t
@@ -1074,6 +1076,7 @@ function checkaround2(_t)
 	end
 	if tiles[d].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 	
 	--left of _t
@@ -1084,6 +1087,7 @@ function checkaround2(_t)
 	end
 	if tiles[l].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 	
 	--right of _t
@@ -1094,6 +1098,7 @@ function checkaround2(_t)
 	end
 	if tiles[r].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 	
 	
@@ -1106,6 +1111,7 @@ function checkaround2(_t)
 	end
 	if tiles[tl].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 	
 	--topright of _t
@@ -1117,6 +1123,7 @@ function checkaround2(_t)
 	end
 	if tiles[tr].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 	
 	--btmleft of _t
@@ -1128,6 +1135,7 @@ function checkaround2(_t)
 	end
 	if tiles[bl].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 	
 	--btmright of _t
@@ -1139,8 +1147,19 @@ function checkaround2(_t)
 	end
 	if tiles[br].hasmine then
 		tiles[_t].warn+=1
+		tiles[_t].hasb=false
 	end
 end--checkaround2()
+
+function checkforbattle()
+	for t in all(tiles) do
+		if t.warn>=3 and 
+		not t.hasb then
+			t.hasb=true
+			krak=true
+		end
+	end
+end
 
 
 function movecursor()
@@ -1751,6 +1770,7 @@ plr_ded=false
 en_ded=false
 mov_plr=0
 mov_en=0
+batt_cnt=0
 
 --hit marker
 en_hit=false
