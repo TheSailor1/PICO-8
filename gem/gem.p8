@@ -575,6 +575,9 @@ function drw_board()
 			else
 					_c=9
 			end
+			if tl.warn>=4 then
+				_c=14
+			end
 			print(tl.warn,6+tl.id_x,6+tl.id_y,_c)
 		end
 	end --for
@@ -782,6 +785,7 @@ function opentile()
 				if tiles[t].hasmine then
 					sfx(57)
 					shake=10
+					wait=60
 					krak=true
 					enhp=ens[1]
 					battletiles+=1
@@ -1153,9 +1157,11 @@ end--checkaround2()
 
 function checkforbattle()
 	for t in all(tiles) do
-		if t.warn>=3 and 
+		if t.warn>=4 and 
 		not t.hasb then
+			sfx(57)
 			t.hasb=true
+			wait=60
 			krak=true
 		end
 	end
@@ -1761,7 +1767,7 @@ bsel=1
 bselpos={{34,108},{24,116},{58,116}}
 
 -- initial variables
-ens={30,10}
+ens={30,10,30,10,30,10,30,10,30,10}
 en_hp=0
 en_cnt=1
 hp=0
@@ -1888,15 +1894,17 @@ function plr_choosing()
 			end
 		end
 		
-		if not bswap then
-			if btnp(❎) then
-				chosen_action(bsel)
-			end
-		else
-			if btnp(🅾️) then
-				chosen_action(bsel)
-			end
-		end--bswap
+		if not en_ded then
+			if not bswap then
+				if btnp(❎) then
+					chosen_action(bsel)
+				end
+			else
+				if btnp(🅾️) then
+					chosen_action(bsel)
+				end
+			end--bswap
+		end--en_ded
 	end--plr_turn
 end
 
@@ -1915,15 +1923,17 @@ end
 
 function attack()
 	if plr_turn then
-		sfx(56)
 		local pwr=1
 		if gems_r>0 then
 			gems_r-=1
 			pwr=2
 		end
-		en_hp-=(ens[en_cnt]/4)*pwr
-		en_hit=true
-		hitcnt=7
+		if en_hp>0 then
+			sfx(56)
+			en_hp-=(ens[en_cnt]/4)*pwr
+			en_hit=true
+			hitcnt=7
+		end
 	--enemy health
 	if en_hp<=0 then
 		sfx(55)
