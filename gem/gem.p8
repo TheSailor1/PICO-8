@@ -5,6 +5,13 @@ __lua__
 -- by the sailor
 
 
+--★
+-- tokens 7113
+-- tokens 7073 - 40
+-- tokens 7028 - 45
+-- tokens 6997 - 31
+-- tokens 5994 - 1003
+
 function _init()
 	
 	--butt swap
@@ -12,24 +19,23 @@ function _init()
 	menuitem(1,"swap ❎/🅾️", butt_swap)
 	
 	fadetable={
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
-	{2,2,2,2,2,2,1,1,1,0,0,0,0,0,0},
-	{3,3,3,3,3,3,1,1,1,0,0,0,0,0,0},
-	{4,4,4,2,2,2,2,2,1,1,0,0,0,0,0},
-	{5,5,5,5,5,1,1,1,1,1,0,0,0,0,0},
-	{6,6,13,13,13,13,5,5,5,5,1,1,1,0,0},
-	{7,6,6,6,6,13,13,13,5,5,5,1,1,0,0},
-	{8,8,8,8,2,2,2,2,2,2,0,0,0,0,0},
-	{9,9,9,4,4,4,4,4,4,5,5,0,0,0,0},
-	{10,10,9,9,9,4,4,4,5,5,5,5,0,0,0},
-	{11,11,11,3,3,3,3,3,3,3,0,0,0,0,0},
-	{12,12,12,12,12,3,3,1,1,1,1,1,1,0,0},
-	{13,13,13,5,5,5,5,1,1,1,1,1,0,0,0},
-	{14,14,14,13,4,4,2,2,2,2,2,1,1,0,0},
-	{15,15,6,13,13,13,5,5,5,5,5,1,1,0,0}
+    split"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+    split"1,1,1,1,1,1,1,0,0,0,0,0,0,0,0",
+    split"2,2,2,2,2,2,1,1,1,0,0,0,0,0,0",
+    split"3,3,3,3,3,3,1,1,1,0,0,0,0,0,0",
+    split"4,4,4,2,2,2,2,2,1,1,0,0,0,0,0",
+    split"5,5,5,5,5,1,1,1,1,1,0,0,0,0,0",
+    split"6,6,13,13,13,13,5,5,5,5,1,1,1,0,0",
+    split"7,6,6,6,6,13,13,13,5,5,5,1,1,0,0",
+    split"8,8,8,8,2,2,2,2,2,2,0,0,0,0,0",
+    split"9,9,9,4,4,4,4,4,4,5,5,0,0,0,0",
+    split"10,10,9,9,9,4,4,4,5,5,5,5,0,0,0",
+    split"11,11,11,3,3,3,3,3,3,3,0,0,0,0,0",
+    split"12,12,12,12,12,3,3,1,1,1,1,1,1,0,0",
+    split"13,13,13,5,5,5,5,1,1,1,1,1,0,0,0",
+    split"14,14,14,13,4,4,2,2,2,2,2,1,1,0,0",
+    split"15,15,6,13,13,13,5,5,5,5,5,1,1,0,0"
 	}
-	
 	t=0
 	trans=0
 	wait=0
@@ -47,7 +53,7 @@ function _init()
 	debug={}
 	
 	--★
-	showmines=false
+	showmines=true
 	showgems=false
 end
 
@@ -64,15 +70,15 @@ function _draw()
 		print(s,1,1+(i*6),8)
 	end
 end
+
+
 -->8
 -- screens
 
 function upd_splash()
 	t+=1
 	
-	devspeed+=0.2
-	develop+=devspeed
-	develop=min(100,develop)
+	fadeeff()
 	
 	if t>=240 or btnp(❎) or btnp(🅾️) then
 		devspeed=0
@@ -106,10 +112,7 @@ end
 function upd_menu()
 	t+=1
 	
-	devspeed+=0.1
-	develop+=devspeed
-	develop=min(100,develop)
-	
+	fadeeff()
 	
 	if t>=60 and sf then
 		sy+=(22-sy)/20
@@ -286,9 +289,7 @@ function drw_menu()
 	sspr(69,0,3,5,58+wd-8,1)
 	rrect(55,7,wd,6,1)
 	rrect(55,6,wd,6,2)
-	print(s,60,8,1)
-	print(s,60,9,1)
-	print(s,60,7,9)
+	sprint(s,60,8,9,1)
 	
 	clip(90,7,8,1)
 	print(s,60,7,10)
@@ -303,14 +304,12 @@ end
 
 function upd_game()
 	t+=1
+	fadeeff()
 	
 	upd_board()
 	upd_parts()
 	upd_bubbs()
 	
-	devspeed+=0.1
-	develop+=devspeed
-	develop=min(100,develop)
 	
 	checkwin()
 	
@@ -338,15 +337,7 @@ function upd_game()
 			trans-=5
 		end
 	else
-		if timer<999 then
-			gtimer+=1
-		end
-			
-		if (gtimer>=60) then
-			gtimer=0
-			timer+=1
-		end
-		
+		upd_timer()
 		upd_cursor()
 	end
 	
@@ -439,6 +430,24 @@ function butt_swap()
 	end
 	return
 end
+
+function upd_timer()
+	if timer<999 then
+		gtimer+=1
+	end
+		
+	if (gtimer>=60) then
+		gtimer=0
+		timer+=1
+	end
+end
+
+function drw_timer(_x,_y)
+	sspr(60,0,6,9,_x,_y)
+	print(timer,_x+9,_y+4,1)
+	print(timer,_x+9,_y+3,1)
+	print(timer,_x+9,_y+2,7)
+end
 -->8
 -- game play
 
@@ -452,6 +461,10 @@ function ini_board()
 	timer=0
 	
 	tiles={}
+	t1_1,t1_2,t1_3=0,0,0
+	t2_1,t2_2,t2_3=0,0,0
+	t3_1,t3_2,t3_3=0,0,0
+	
 	flags={}
 	bubbs={}
 	
@@ -508,12 +521,13 @@ function ini_board()
 	gems_g=0
 	gems_o=0
 	
-	
-	allgems=flr(rnd(11))
+--	allgems=flr(rnd(11))
+	--min of 3 gems
+	allgems=3+flr(rnd(8))
 	while allgems>0 do
 		local pickedgem
 		choices=rnd(1)
-		if choices<0.1 then
+		if choices<0.2 then
 			pickedgem="o"
 		elseif choices<0.4 then
 			pickedgem="g"
@@ -697,9 +711,7 @@ function drw_scoreboard()
 	pset(88,105,2)
 	
 	--score / points
-	print("score "..score,7,108,1)
-	print("score "..score,7,107,1)
-	print("score "..score,7,106,10)
+	sprint("score "..score,7,107,10,1)
 	pset(7,110,9)
 	pset(12,110,9)
 	pset(15,110,9)
@@ -708,10 +720,7 @@ function drw_scoreboard()
 	pset(23,110,9)
 	
 	--time
-	sspr(60,0,6,9,65,104)
-	print(timer,74,108,1)
-	print(timer,74,107,1)
-	print(timer,74,106,7)
+	drw_timer(65,104)
 	
 	--flags
 	if curt=="flag" then
@@ -772,34 +781,6 @@ function upd_cursor()
 		
 	end
 end--upd_cursor()
-
-function opentile()
-	local t
-	for t=1,#tiles do
-			if (curx*size==tiles[t].id_x
-			and cury*size==tiles[t].id_y 
-			and not tiles[t].revealed
-			and not tiles[t].flag) then
-				tiles[t].revealed=true
-				new_bubbs(curx*size,cury*size)
-				if tiles[t].hasmine then
-					sfx(57)
-					shake=10
-					wait=60
-					krak=true
-					enhp=ens[1]
-					battletiles+=1
-				else
-					sfx(62)
-					shake=0.1
-					score+=10
-					checkgems(t)
-					checkaround(t)
-					opentiles+=1
-				end
-			end
-	end
-end--opentile
 
 function checkgems(_t)
 	local p,pc,ns=0,0,0
@@ -913,247 +894,80 @@ function drw_wflags()
 	end
 end--drw_wflags()
 
-function checkaround(_t)
-	local u,d,l,r,tl,tr,bl,br
-	
-	--above _t
-	if tiles[_t].id_y~=0 then
-		u=_t-1
-	else
-		u=_t
+function opentile()
+	local t
+	for t=1,#tiles do
+			if (curx*size==tiles[t].id_x
+			and cury*size==tiles[t].id_y 
+			and not tiles[t].revealed
+			and not tiles[t].flag) then
+				tiles[t].revealed=true
+				new_bubbs(curx*size,cury*size)
+				if tiles[t].hasmine then
+					sfx(57)
+					shake=10
+					wait=60
+					krak=true
+					enhp=ens[1]
+					battletiles+=1
+				else
+					sfx(62)
+					shake=0.1
+					score+=10
+					checkgems(t)
+					newcheckaround(t)
+					opentiles+=1
+				end
+			end
 	end
-	if not tiles[u].revealed and
-	not tiles[u].hasmine then
-		tiles[u].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(u)
-		checkaround2(u)
-	elseif tiles[u].hasmine then
-		tiles[_t].warn+=1
-	end
-	
-	--below _t
-	if tiles[_t].id_y~=84 then
-		d=_t+1
-	else
-		d=_t
-	end
-	if not tiles[d].revealed and
-	not tiles[d].hasmine then
-		tiles[d].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(d)
-		checkaround2(d)
-	elseif tiles[d].hasmine then
-		tiles[_t].warn+=1
-	end
-	
-	--left of _t
-	if tiles[_t].id_x~=0 then
-		l=_t-8
-	else
-		l=_t
-	end
-	if not tiles[l].revealed and
-	not tiles[l].hasmine then
-		tiles[l].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(l)
-		checkaround2(l)
-	elseif tiles[l].hasmine then
-		tiles[_t].warn+=1
-	end
-	
-	--right of _t
-	if tiles[_t].id_x~=84 then
-		r=_t+8
-	else
-		r=_t
-	end
-	if not tiles[r].revealed and
-	not tiles[r].hasmine then
-		tiles[r].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(r)
-		checkaround2(r)
-	elseif tiles[r].hasmine then
-		tiles[_t].warn+=1
-	end
-	
-	
-	--topleft of _t
-	if tiles[_t].id_y~=0 and
-	tiles[_t].id_x~=0 then
-		tl=_t-9
-	else
-		tl=_t
-	end
-	if not tiles[tl].revealed and
-	not tiles[tl].hasmine then
-		tiles[tl].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(tl)
-		checkaround2(tl)
-	elseif tiles[tl].hasmine then
-		tiles[_t].warn+=1
-	end
-	
-	--topright of _t
-	if tiles[_t].id_y~=0 and
-	tiles[_t].id_x~=84 then
-		tr=_t+7
-	else
-		tr=_t
-	end
-	if not tiles[tr].revealed and
-	not tiles[tr].hasmine then
-		tiles[tr].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(tr)
-		checkaround2(tr)
-	elseif tiles[tr].hasmine then
-		tiles[_t].warn+=1
-	end
-	
-	--btmleft of _t
-	if tiles[_t].id_y~=84 and
-	tiles[_t].id_x~=0 then
-		bl=_t-7
-	else
-		bl=_t
-	end
-	if not tiles[bl].revealed and
-	not tiles[bl].hasmine then
-		tiles[bl].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(bl)
-		checkaround2(bl)
-	elseif tiles[bl].hasmine then
-		tiles[_t].warn+=1
-	end
-	
-	--btmright of _t
-	if tiles[_t].id_y~=84 and
-	tiles[_t].id_x~=84 then
-		br=_t+9
-	else
-		br=_t
-	end
-	if not tiles[br].revealed and
-	not tiles[br].hasmine then
-		tiles[br].revealed=true
-		opentiles+=1
-		score+=10
-		checkgems(br)
-		checkaround2(br)
-	elseif tiles[br].hasmine then
-		tiles[_t].warn+=1
-	end
-end--checkaround()
+end--opentile
 
-function checkaround2(_t)
-	local u,d,l,r,tl,tr,bl,br
-	
-	--above _t
-	if tiles[_t].id_y~=0 then
-		u=_t-1
+function newcheckaround(_t)
+	local x1,x2=0,0
+	if cury==0 then
+		x1,x2=0,1
+	elseif cury==7 then
+		x1,x2=-1,0
 	else
-		u=_t
-	end
-	if tiles[u].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
+		x1,x2=-1,1
 	end
 	
-	--below _t
-	if tiles[_t].id_y~=84 then
-		d=_t+1
-	else
-		d=_t
+		for _x=x1,x2 do
+		for _y=-1,1 do
+		 if not (_x==0 and _y==0) then
+				local curtil=_t+_x+_y*8
+				if tiles[curtil]~=nil then
+				if not tiles[curtil].revealed 
+				and not tiles[curtil].hasmine then
+					tiles[curtil].revealed=true
+					opentiles+=1
+					score+=10
+					checkgems(curtil)
+					newcheckaround2(curtil)
+				elseif tiles[curtil].hasmine then
+					tiles[_t].warn+=1
+				end
+				end
+		 end    
+		end
 	end
-	if tiles[d].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
+end
+
+function newcheckaround2(_t)
+	for _x=-1,1 do
+		for _y=-1,1 do
+			if not (_x==0 and _y==0) then
+				local curtil=_t+_x+_y*8
+				if tiles[curtil]~=nil then
+					if tiles[curtil].hasmine then
+						tiles[_t].warn+=1
+						tiles[_t].hasb=false
+					end
+				end
+			end    
+		end
 	end
-	
-	--left of _t
-	if tiles[_t].id_x~=0 then
-		l=_t-8
-	else
-		l=_t
-	end
-	if tiles[l].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
-	end
-	
-	--right of _t
-	if tiles[_t].id_x~=84 then
-		r=_t+8
-	else
-		r=_t
-	end
-	if tiles[r].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
-	end
-	
-	
-	--topleft of _t
-	if tiles[_t].id_y~=0 and
-	tiles[_t].id_x~=0 then
-		tl=_t-9
-	else
-		tl=_t
-	end
-	if tiles[tl].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
-	end
-	
-	--topright of _t
-	if tiles[_t].id_y~=0 and
-	tiles[_t].id_x~=84 then
-		tr=_t+7
-	else
-		tr=_t
-	end
-	if tiles[tr].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
-	end
-	
-	--btmleft of _t
-	if tiles[_t].id_y~=84 and
-	tiles[_t].id_x~=0 then
-		bl=_t-7
-	else
-		bl=_t
-	end
-	if tiles[bl].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
-	end
-	
-	--btmright of _t
-	if tiles[_t].id_y~=84 and
-	tiles[_t].id_x~=84 then
-		br=_t+9
-	else
-		br=_t
-	end
-	if tiles[br].hasmine then
-		tiles[_t].warn+=1
-		tiles[_t].hasb=false
-	end
-end--checkaround2()
+end
 
 function checkforbattle()
 	for t in all(tiles) do
@@ -1167,50 +981,19 @@ function checkforbattle()
 	end
 end
 
-
 function movecursor()
-	if btnp(➡️) then
-		sfx(63)
-		if curx<cols-1 then
-			curx+=1
-		else
-			curx=0
-		end
-	end
-	if btnp(⬅️) then
-		sfx(63)
-		if curx>0 then
-			curx-=1
-		else
-			curx=cols-1
-		end
-	end
-	if btnp(⬆️) then
-		sfx(63)
-		if cury>0 then
-			cury-=1
-		else
-			cury=rows-1
-		end
-	end
-	if btnp(⬇️) then
-		sfx(63)
-		if cury<rows-1 then
-			cury+=1
-		else
-			cury=0
-		end
-	end
-end--movecursor()
+ local dx = tonum(btnp(➡️)) - tonum(btnp(⬅️)) --tonum makes a bool into 0 or 1
+ local dy = tonum(btnp(⬇️)) - tonum(btnp(⬆️)) --pressing both directions together is the same as pressing neither
+ curx += dx
+ cury += dy
+ curx %= cols --modulo; curx repeats from 0 when reaching cols (and vice-versa)
+ cury %= rows
+end
 
 function upd_kraken()
 	t+=1
-	
-	
-	devspeed+=0.1
-	develop+=devspeed
-	develop=min(100,develop)
-	
+	fadeeff()
+	upd_timer()
 	upd_bubbs()
 	upd_battle()
 end--/
@@ -1306,13 +1089,11 @@ function drw_kraken()
 	drw_bubbs()
 	camera()
 	
-	print("krak",44,32,5)
-	print("krak",44,31,7)
+	sprint("krak",44,31,7,5)
 	rect(58,22,58-ens[en_cnt]-2,28,2)
 	rectfill(57,23,57-en_hp,27,hpcol2)
 	
-	print("dredger",66,96,1)
-	print("dredger",66,95,7)
+	sprint("dredger",66,95,7,1)
 	rect(83,86,83+maxhp+2,92,2)
 	rectfill(84,87,84+hp,91,hpcol1)
 	
@@ -1325,6 +1106,9 @@ function drw_kraken()
 	pset(2,125,2)
 	pset(125,105,2)
 	pset(125,125,2)
+	
+	--timer
+	drw_timer(5,5)
 	
 	--gems
 	local gems={41,51,61}
@@ -1344,9 +1128,9 @@ function drw_kraken()
 	if (bsel==2) c2=11
 	if (bsel==3) c3=9
 	
-	print("attack",8,109,c1)
-	print("heal",8,117,c2)
-	print("fright",34,117,c3)
+	sprint("attack",8,109,c1,1)
+	sprint("heal",8,118,c2,1)
+	sprint("fright",34,118,c3,1)
 	
 	print(gems_r,79,117,14)
 	print(gems_g,97,117,11)
@@ -1452,20 +1236,16 @@ function drw_win()
 	sspr(61,39,10,9,103,51)
 	
 	--text(points)
-	print(flagtiles.."X",12,44,2)
-	print(flagtiles.."X",12,43,7)
+	sprint(flagtiles.."X",12,43,10,2)
 	print("15",12,63,4)
 	
-	print(gems_r.."X",44,44,2)
-	print(gems_r.."X",44,43,7)
+	sprint(gems_r.."X",44,43,10,2)
 	print("10",44,63,4)
 	
-	print(gems_g.."X",74,44,2)
-	print(gems_g.."X",74,43,7)
+	sprint(gems_g.."X",74,43,10,2)
 	print("20",74,63,4)
 	
-	print(gems_o.."X",104,44,2)
-	print(gems_o.."X",104,43,7)
+	sprint(gems_o.."X",104,43,10,2)
 	print("30",104,63,4)
 	
 	--divider
@@ -1502,9 +1282,7 @@ function drw_win()
 end
 
 function upd_win()
-	devspeed+=0.2
-	develop+=devspeed
-	develop=min(100,develop)
+	fadeeff()
 	
 	if not bswap then
 		if btnp(❎) then
@@ -1523,19 +1301,28 @@ function gotomenu()
 	_drw=drw_menu
 	_upd=upd_menu
 end
+
+
 -->8
 -- tools
 
+function fadeeff()
+	devspeed+=0.2
+	develop+=devspeed
+	develop=min(100,develop)
+end
 
 function lerp(a,b,spd)
 	local res=a-b/spd
 	return res
 end
 
---[[function lerp(a,b,t)
- local result=a+t*(b-a)
- return result
-end]]
+
+function sprint(s,x,y,fg,bg)
+	print(s,x,y,bg)
+	print(s,x,y+1,bg)
+	print(s,x,y-1,fg)
+end
 
 function cprint(s,y,c)
 	local x=64-(#s*2)
@@ -1774,6 +1561,7 @@ hp=0
 maxhp=30
 plr_ded=false
 en_ded=false
+en_fright=false
 mov_plr=0
 mov_en=0
 batt_cnt=0
@@ -1804,7 +1592,8 @@ end
 
 
 function drw_target()
-	if hp>0 and en_hp>0 then
+	if hp>0 and en_hp>0 
+	and not en_fright then
 		if plr_turn then
 			if bsel~=2 then
 				dx=x2
@@ -1862,6 +1651,7 @@ function isgameover()
 			mov_en=0
 			plr_ded=false
 			en_ded=false
+			en_fright=false
 			_upd=upd_gameover
 			_drw=drw_gameover
 		end
@@ -1917,7 +1707,7 @@ function chosen_action(b)
 		heal()
 	elseif b==3 then
 		wait=40
-		frighten()
+		fright()
 	end
 end
 
@@ -1969,10 +1759,25 @@ function heal()
 	end
 end
 
+function fright()
+	if gems_o>0 then
+		if en_hp>0 then
+			sfx(55)
+			krak=false
+			en_ded=true
+			en_fright=true
+			wait=120
+			backtogame()
+			gems_o-=1
+		end
+	end
+end
+
 function backtogame()
 	if wait<=0 and not krak then
 		mov_en=0
 		en_ded=false
+		en_fright=false
 		en_cnt+=1
 		_upd=upd_game
 		_drw=drw_game
@@ -2292,9 +2097,9 @@ d51e0000000140001402013040140301406011060110601103012000120001202013040130301206
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00070000000001e0501c3501b0502a050263501f05026050360503335000050251501d150171500f1500915004150021500105001050000000000000000000000000000000000000000000000000000000000000
-000200003d2503d25026250302503e2503f6503f6500065007650000501e6501e6501e65000050000501c65008650056500265000050000500000000000000000000000000000000000000000000000000000000
-000600003e6503e6503e6503f650353502f35029350243501f3501a35016350123500e3500b350073500535001350003500000000000000000000000000000000000000000000000000000000000000000000000
+00070000000001e0201c3201b0202a020263201f02026020360203332000020251201d130171300f1300913004130021200102001020000000000000000000000000000000000000000000000000000000000000
+000200003d2303d23026230302303e2303f6303f6300063007630000301e6301e6301e65000050000501c65008650056500265000050000500000000000000000000000000000000000000000000000000000000
+00060000226202862027620206201f6202f32029320243201f3201a32016320123100e3100b310073100531001310003100000000000000000000000000000000000000000000000000000000000000000000000
 0103000030733305000e1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 79060000240361203611506147060e7360a736155060b70624506120360d5361353622036145360d1360f13612136357360000600006000060000600006000060000600006000060000600006000060000600006
 400300000a153000530005325553213530000308353100531a0032605323053000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
