@@ -920,20 +920,14 @@ function opentile()
 end--opentile
 
 function newcheckaround(_t)
-	local a,b=0,0
-	if cury==0 then
-		a,b=0,1
-	elseif cury==7 then
-		a,b=-1,0
-	else
-		a,b=-1,1
-	end
-	
+	local a,b=-1,1
+	if (cury==0) a,b=0,1
+	if (cury==7) a,b=-1,0
 		for _x=a,b do
 		for _y=-1,1 do
 		 if not (_x==0 and _y==0) then
 				local curtil=_t+_x+_y*8
-				if tiles[curtil]~=nil then
+				if tiles[curtil] then
 				if not tiles[curtil].revealed 
 				and not tiles[curtil].hasmine then
 					tiles[curtil].revealed=true
@@ -951,20 +945,14 @@ function newcheckaround(_t)
 end
 
 function newcheckaround2(_t)
-	local a,b=0,0
-	if cury==0 then
-		a,b=0,1
-	elseif cury==7 then
-		a,b=-1,0
-	else
-		a,b=-1,1
-	end
-	
-	for _x=-1,1 do
-		for _y=a,b do
+	local a,b=-1,1
+	if (_t%8==1) a,b=0,1
+	if (_t%8==0) a,b=-1,0
+	for _x=a,b do
+		for _y=-1,1 do
+			local curtil=_t+_x+_y*8
 			if not (_x==0 and _y==0) then
-				local curtil=_t+_x+_y*8
-				if tiles[curtil]~=nil then
+				if tiles[curtil] then
 					if tiles[curtil].hasmine then
 						tiles[_t].warn+=1
 						tiles[_t].hasb=false
