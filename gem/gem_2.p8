@@ -53,7 +53,7 @@ function _init()
 	debug={}
 	
 	--★
-	showmines=true
+	showmines=false
 	showgems=false
 end
 
@@ -69,6 +69,7 @@ function _draw()
 		local s="\^#"..debug[i]
 		print(s,1,1+(i*6),8)
 	end
+	
 end
 
 
@@ -311,28 +312,12 @@ function upd_game()
 	checkwin()
 	
 	checkforbattle()
+	if trigbat then
+		upd_battleintro()
+	end
+	
 	if krak then
-		if trans==0 then
-			if wait>=0 then
-				wait-=1
-			else
-				trans=127
-				shake=5
-			end
-		elseif trans<=-220 then
-			trans=0
-			wait=0
-			devspeed=0
-			develop=0
-			t=0
-			bsel=1
-			shake=0
-			en_hp=ens[en_cnt]
-			_upd=upd_kraken
-			_drw=drw_kraken
-		else
-			trans-=5
-		end
+		upd_battleintro()
 	else
 		upd_timer()
 		upd_cursor()
@@ -382,18 +367,8 @@ function drw_game()
 	rect(0,0,127,127,12)
 	
 	--kraken
-	if krak and wait<=0 then
-		rectfill(0,trans,127,127,8)
-		if trans~=nil then
-			if trans<=50 then
-			fillp(░)
-			rectfill(0,trans,127,127,2)
-			fillp()
-			print("\^t\^wbattle!",36,68,1)
-			print("\^t\^wbattle!",36,66,1)
-			print("\^t\^wbattle!",36,64,9)
-			end
-		end
+	if krak then
+		drw_battleintro()
 	end
 	
 	drw_bubbs()
@@ -902,8 +877,9 @@ function opentile()
 				new_bubbs(curx*size,cury*size)
 				if tiles[t].hasmine then
 					sfx(57)
-					shake=10
 					wait=60
+					shake=10
+					trans=127
 					krak=true
 					enhp=ens[1]
 					battletiles+=1
@@ -928,16 +904,17 @@ function newcheckaround(_t)
 		 if not (_x==0 and _y==0) then
 				local curtil=_t+_x+_y*8
 				if tiles[curtil] then
-				if not tiles[curtil].revealed 
-				and not tiles[curtil].hasmine then
-					tiles[curtil].revealed=true
-					opentiles+=1
-					score+=10
-					checkgems(curtil)
-					newcheckaround2(curtil)
-				elseif tiles[curtil].hasmine then
-					tiles[_t].warn+=1
-				end
+					if not tiles[curtil].revealed 
+					and not tiles[curtil].hasmine then
+						tiles[curtil].revealed=true
+						opentiles+=1
+						score+=10
+						checkgems(curtil)
+						newcheckaround2(curtil)
+					elseif tiles[curtil].hasmine then
+						tiles[_t].warn+=1
+						checkforbattle()
+					end
 				end
 		 end    
 		end
@@ -956,6 +933,7 @@ function newcheckaround2(_t)
 					if tiles[curtil].hasmine then
 						tiles[_t].warn+=1
 						tiles[_t].hasb=false
+						checkforbattle()
 					end
 				end
 			end    
@@ -967,21 +945,22 @@ function checkforbattle()
 	for t in all(tiles) do
 		if t.warn>=4 and 
 		not t.hasb then
-			sfx(57)
-			t.hasb=true
+			trigbat=true
 			wait=60
-			krak=true
+			t.hasb=true
+			sfx(57)
 		end
 	end
 end
 
 function movecursor()
- local dx = tonum(btnp(➡️)) - tonum(btnp(⬅️)) --tonum makes a bool into 0 or 1
- local dy = tonum(btnp(⬇️)) - tonum(btnp(⬆️)) --pressing both directions together is the same as pressing neither
- curx += dx
- cury += dy
- curx %= cols --modulo; curx repeats from 0 when reaching cols (and vice-versa)
- cury %= rows
+	local dx = tonum(btnp(➡️)) - tonum(btnp(⬅️)) --tonum makes a bool into 0 or 1
+	local dy = tonum(btnp(⬇️)) - tonum(btnp(⬆️)) --pressing both directions together is the same as pressing neither
+	curx += dx
+	cury += dy
+	curx %= cols --modulo; curx repeats from 0 when reaching cols (and vice-versa)
+	cury %= rows
+	if (dx~=0 or dy~=0) sfx"63"
 end
 
 function upd_kraken()
@@ -1082,6 +1061,26 @@ function drw_kraken()
 	
 	drw_bubbs()
 	camera()
+	
+	
+	--hit msgs
+	local mx,my
+	if plr_turn then
+		mx,my=60,60
+	else
+		mx,my=60,10
+	end
+	
+	if hittim>0 then
+		hittim-=1
+		?"\^w\^t"..hitmsg,mx-1,my,2
+		?"\^w\^t"..hitmsg,mx+1,my,2
+		?"\^w\^t"..hitmsg,mx,my-1,2
+		?"\^w\^t"..hitmsg,mx,my+1,2
+		?"\^w\^t"..hitmsg,mx,my,8
+	else 
+		hittim=0
+	end
 	
 	sprint("krak",44,31,7,5)
 	rect(58,22,58-ens[en_cnt]-2,28,2)
@@ -1500,10 +1499,26 @@ function big_bubbs()
 	end
 end
 
+function new_mov_bubbs(_y)
+	local amt=20+flr(rnd(10))
+	for b=1,amt do
+		add(bubbs,{
+			x=rnd(127),
+			y=_y+rnd(10),
+			yspd=rnd({10})*-1,
+			r=rnd({10,12,14}),
+			c=8,
+			typ=3
+		})
+	end
+end
+
 function drw_bubbs()
 	for b in all(bubbs) do
 		if b.typ==1 then
 			circ(b.x+sin(t*0.3)*0.9,b.y,b.r,b.c)
+		elseif b.typ==3 then
+			circfill(b.x+sin(t*0.3)*0.9,b.y,b.r,b.c)
 		end
 	end
 end
@@ -1529,6 +1544,12 @@ function upd_bubbs()
 		elseif b.typ==2 then
 			if b.r>0 then
 				b.r-=0.02
+			else
+				del(bubbs,b)
+			end
+		elseif b.typ==3 then
+			if b.r>0 then
+				b.r-=2
 			else
 				del(bubbs,b)
 			end
@@ -1579,8 +1600,11 @@ fx,dx=x1,x1
 fy,dy=y1,y1
 
 --★
+trigbat=false
 plr_turn=true
-
+txt=split"bam!,bop!,bip!,kup!,wak!"
+hitmsg=""
+hittim=0
 
 function drw_gameover()
 	cls(8)
@@ -1720,28 +1744,35 @@ function attack()
 			en_hp-=(ens[en_cnt]/4)*pwr
 			en_hit=true
 			hitcnt=7
+			hitmsg=tostr(rnd(txt))
+			hittim=20
+			plr_turn=false
 		end
 	--enemy health
 	if en_hp<=0 then
 		sfx(55)
 		krak=false
 		en_ded=true
+		plr_turn=true
 		wait=120
 		backtogame()
 		return
 	end
-		plr_turn=false
 	else
-		sfx(56)
-		hp-=maxhp/6
-		plr_hit=true
-		hitcnt=7
-		if hp<=0 then
-			plr_ded=true
-			wait=120
-			shake=12
+		if en_hp>0 then
+			sfx(56)
+			hp-=maxhp/6
+			plr_hit=true
+			hitcnt=7
+			hitmsg=tostr(rnd(txt))
+			hittim=20
+			if hp<=0 then
+				plr_ded=true
+				wait=120
+				shake=12
+			end
+			plr_turn=true
 		end
-		plr_turn=true
 	end
 end
 
@@ -1776,8 +1807,46 @@ function backtogame()
 		en_ded=false
 		en_fright=false
 		en_cnt+=1
+		trigbat=false
 		_upd=upd_game
 		_drw=drw_game
+	end
+end
+
+function upd_battleintro()
+	if wait>0 then
+		wait-=1
+	end
+	
+	if trans>0 then
+		trans-=3
+		new_mov_bubbs(trans)
+	end
+	
+	if wait<=0 then
+		devspeed=0
+		develop=0
+		en_hp=ens[en_cnt]
+		krak=true
+		_upd=upd_kraken
+		_drw=drw_kraken
+	end
+end
+
+function drw_battleintro()
+	local txt="\^t\^wbattle!"
+	rectfill(0,trans,127,trans+130,8)
+	if trans<=0 then
+		fillp(░)
+		rectfill(0,trans,127,trans+130,1)
+		fillp()
+	end
+	
+	if trans<40 then
+		rrect(36,48,55,15,2)
+		?txt,38,52,1
+		?txt,38,50,10
+		?txt,38,49,9
 	end
 end
 __gfx__
