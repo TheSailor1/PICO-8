@@ -55,7 +55,7 @@ function _init()
 	debug={}
 	
 	--★
-	showmines=true
+	showmines=false
 	showgems=false
 end
 
@@ -478,6 +478,7 @@ function ini_board()
 	allflags=10
 	plrflags=allflags
 	krak=false
+	fw=4
 	
 	while allmines>0 do
 		local rtile=flr(1+rnd(#tiles-1))
@@ -865,15 +866,14 @@ function drw_wflags()
 end--drw_wflags()
 
 function opentile()
-	local t
-	for t=1,#tiles do
-			if (curx*size==tiles[t].id_x
-			and cury*size==tiles[t].id_y 
-			and not tiles[t].revealed
-			and not tiles[t].flag) then
-				tiles[t].revealed=true
+	for tl=1,#tiles do
+			if (curx*size==tiles[tl].id_x
+			and cury*size==tiles[tl].id_y 
+			and not tiles[tl].revealed
+			and not tiles[tl].flag) then
+				tiles[tl].revealed=true
 				new_bubbs(curx*size,cury*size)
-				if tiles[t].hasmine then
+				if tiles[tl].hasmine then
 					sfx(57)
 					wait=100
 					trans=100
@@ -885,17 +885,18 @@ function opentile()
 					sfx(62)
 					shake=0.1
 					score+=10
-					checkgems(t)
-					add(batlist,tiles[t])
-					newcheckaround(t)
+					checkgems(tl)
+					checkaround(tl)
 					opentiles+=1
 				end
 			end
 	end
 end--opentile
 
-function newcheckaround(_t)
+function checkaround(_t)
 	local a,b=-1,1
+	local fcount=0
+	
 	if (cury==0) a,b=0,1
 	if (cury==7) a,b=-1,0
 		for _x=a,b do
@@ -909,56 +910,32 @@ function newcheckaround(_t)
 						opentiles+=1
 						score+=10
 						checkgems(curtil)
-						newcheckaround2(curtil)
+						checkaround2(curtil)
 					elseif tiles[curtil].hasmine then
 						tiles[_t].warn+=1
-						flagbattle(_t)
+						if tiles[curtil].flag then
+							fcount+=1
+						end
+						if tiles[_t].warn>=fw then
+							if fcount>=fw then
+								--nothing
+							else
+								battle()
+							end
+						end
 					end
-				end
+			end
 			end    
-		end
+	end
 	end
 end
 
-function flagbattle(ti)
-	local fw=3
-	if tiles[ti].warn>=fw then
-		if checkforflags(ti)==fw then
-			--nothing
-		else
-			tiles[ti].hasb=true
-			battle()
-		end
-	end
-end
-
-function checkforflags(ti)
-	local a,b=-1,1
-	local fcnt=0
-	if (ti%8==1) a,b=0,1
-	if (ti%8==0) a,b=-1,0
-	for _x=a,b do
-		for _y=-1,1 do
-			local curtil=ti+_x+_y*8
-			if not (_x==0 and _y==0) then
-				if tiles[curtil] then
-					if tiles[curtil].flag then
-						fcnt+=1
-					end
-				end
-			end    
-		end
-	end
-	
-	debug[1]=fcnt
-	return fcnt
-end
-
-function newcheckaround2(_t)
+function checkaround2(_t)
+	local fcount=0
 	local a,b=-1,1
 	if (_t%8==1) a,b=0,1
 	if (_t%8==0) a,b=-1,0
-	for _x=a,b do
+		for _x=a,b do
 		for _y=-1,1 do
 			local curtil=_t+_x+_y*8
 			if not (_x==0 and _y==0) then
@@ -966,8 +943,20 @@ function newcheckaround2(_t)
 					if tiles[curtil].hasmine then
 						tiles[_t].warn+=1
 						tiles[_t].hasb=false
-						flagbattle(_t)
 					end
+					
+					if tiles[curtil].flag then
+						fcount+=1
+					end
+					
+					if tiles[_t].warn>=fw then
+						if fcount>=fw then
+								--nothing
+							else
+								battle()
+							end
+					end
+					
 				end
 			end    
 		end
@@ -1631,7 +1620,6 @@ fx,dx=x1,x1
 fy,dy=y1,y1
 
 --★
-batlist={}
 trigbat=false
 plr_turn=true
 txt=split"bam!,bop!,bip!,kup!,wak!"
