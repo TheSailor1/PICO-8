@@ -84,6 +84,7 @@ function _draw()
 	debug[1]=wait
 	debug[2]=plr_ded
 	debug[3]=hp
+	debug[4]=#bubbs
 end
 
 
