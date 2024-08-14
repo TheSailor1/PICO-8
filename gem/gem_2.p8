@@ -81,10 +81,7 @@ function _draw()
 		print(s,1,1+(i*6),8)
 	end
 	
-	debug[1]=wait
-	debug[2]=plr_ded
-	debug[3]=hp
-	debug[4]=#bubbs
+	debug[1]=t
 end
 
 
@@ -92,7 +89,11 @@ end
 -- screens
 
 function upd_splash()
-	t+=1
+	if t>5 then
+		t=0
+	else
+		t+=1
+	end
 	
 	fadeeff(1)
 	
@@ -123,7 +124,11 @@ function drw_splash()
 end
 
 function upd_menu()
-	t+=1
+	if t>500 then
+		t=0
+	else
+		t+=1
+	end
 	
 	fadeeff(1)
 	
@@ -316,7 +321,11 @@ function drw_menu()
 end
 
 function upd_game()
-	t+=1
+	if t>500 then
+		t=0
+	else
+		t+=1
+	end
 	fadeeff(1)
 	
 	upd_board()
@@ -746,7 +755,7 @@ end
 
 
 function upd_cursor()
-	if t>20 then
+	if t>10 then
 		movecursor()
 		
 		if bswap then
@@ -998,7 +1007,11 @@ function movecursor()
 end
 
 function upd_kraken()
-	t+=1
+	if t>500 then
+		t=0
+	else
+		t+=1
+	end
 	fadeeff(5)
 	upd_timer()
 	upd_bubbs()
@@ -1849,7 +1862,11 @@ function backtogame()
 end
 
 function upd_battleintro()
-	t+=1
+	if t>500 then
+		t=0
+	else
+		t+=1
+	end
 	
 	if wait>0 then
 		wait-=1
