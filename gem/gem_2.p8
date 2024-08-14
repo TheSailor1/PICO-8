@@ -5,6 +5,15 @@ __lua__
 -- by the sailor
 
 
+-- ★★
+-- todo
+---------
+
+-- opening last tile doesnt wait
+--  before win screen
+
+-- 
+
 --★
 -- tokens 7113
 -- tokens 7073 - 40
@@ -55,7 +64,7 @@ function _init()
 	debug={}
 	
 	--★
-	showmines=false
+	showmines=true
 	showgems=false
 end
 
@@ -71,6 +80,10 @@ function _draw()
 		local s="\^#"..tostr(debug[i])
 		print(s,1,1+(i*6),8)
 	end
+	
+	debug[1]=wait
+	debug[2]=plr_ded
+	debug[3]=hp
 end
 
 
@@ -375,6 +388,7 @@ function drw_game()
 end
 
 function upd_gameover()
+	
 	if not bswap then
 		if btnp(❎) then
 			_upd=upd_menu
@@ -1596,7 +1610,7 @@ ens={30,10,30,10,30,10,30,10,30,10}
 en_hp=0
 en_cnt=1
 hp=0
-maxhp=30
+maxhp=20
 plr_ded=false
 en_ded=false
 en_fright=false
@@ -1665,29 +1679,22 @@ function upd_battle()
 	--timer
 	if wait>0 then
 		wait-=1
-	else
-		wait=0
 	end
 	
 	
 	--plr health
-	if hp>0 then
+	if hp<=0 then
+			isgameover()
+	else
 		--plr selecting
 		plr_choosing()
 		--enemy
 		en_action()
 		backtogame()
-	else
-		--game over
-		plr_ded=true
-		en_cnt=1
-		wait=30
-		isgameover()
 	end
 end
 
 function isgameover()
-	if plr_ded then
 		if wait<=0 then
 			mov_plr=0
 			mov_en=0
@@ -1698,7 +1705,6 @@ function isgameover()
 			_upd=upd_gameover
 			_drw=drw_gameover
 		end
-	end
 end
 
 
@@ -1756,20 +1762,42 @@ end
 
 function attack()
 	if plr_turn then
-		local pwr=1
-		if gems_r>0 then
-			gems_r-=1
-			pwr=2
-		end
-		if en_hp>0 then
-			sfx(56)
-			en_hp-=(ens[en_cnt]/4)*pwr
-			en_hit=true
-			hitcnt=7
-			hitmsg=tostr(rnd(txt))
-			hittim=20
-			plr_turn=false
-		end
+		atk_en()
+	else
+		atk_plr()
+	end
+end
+
+function atk_plr()
+	sfx(56)
+	hp-=maxhp\6
+	plr_hit=true
+	hitcnt=7
+	hitmsg=tostr(rnd(txt))
+	hittim=20
+	plr_turn=true
+	if hp<=0 then
+		hp=0
+		plr_ded=true
+		wait=120
+	end
+end
+
+function atk_en()
+	local pwr=1
+	if gems_r>0 then
+		gems_r-=1
+		pwr=2
+	end
+	if en_hp>0 then
+	sfx(56)
+	en_hp-=(ens[en_cnt]/4)*pwr
+	en_hit=true
+	hitcnt=7
+	hitmsg=tostr(rnd(txt))
+	hittim=20
+	plr_turn=false
+	end
 	--enemy health
 	if en_hp<=0 then
 		sfx(55)
@@ -1779,22 +1807,6 @@ function attack()
 		wait=120
 		backtogame()
 		return
-	end
-	else
-		if en_hp>0 then
-			sfx(56)
-			hp-=maxhp/6
-			plr_hit=true
-			hitcnt=7
-			hitmsg=tostr(rnd(txt))
-			hittim=20
-			if hp<=0 then
-				plr_ded=true
-				wait=120
-				shake=12
-			end
-			plr_turn=true
-		end
 	end
 end
 
