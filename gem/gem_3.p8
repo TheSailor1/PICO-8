@@ -16,10 +16,6 @@ __lua__
 -- enemy hits player when 
 -- it dies
 
--- improve hp bars
-
--- button feedback when in battle
-
 -- tut screen
 
 
@@ -767,7 +763,7 @@ function upd_cursor()
 		
 		if bswap then
 			if btnp(❎) then
-				new_bubbs(86,100)
+				new_bubbs(86,100,12,4)
 				flagtile()
 			elseif btnp(🅾️) then
 				opentile()
@@ -776,7 +772,7 @@ function upd_cursor()
 			if btnp(❎) then
 				opentile()
 			elseif btnp(🅾️) then
-				new_bubbs(86,100)
+				new_bubbs(86,100,12,4)
 				flagtile()
 			end
 		end
@@ -821,7 +817,7 @@ function checkgems(_t)
 			rtbl={-5,-10,-15,5,10,15}
 		end
 		
-		new_bubbs(86,100)
+		new_bubbs(86,100,12,6)
 		
 		for i=1,p do
 			add(parts,{
@@ -918,7 +914,7 @@ function opentile()
 			and not tiles[tl].revealed
 			and not tiles[tl].flag) then
 				tiles[tl].revealed=true
-				new_bubbs(curx*size,cury*size)
+				new_bubbs(curx*size,cury*size,12,6)
 				if tiles[tl].hasmine then
 					sfx(57)
 					wait=100
@@ -1090,7 +1086,8 @@ function drw_kraken()
 	
 	drw_target()
 	
-	local hpcol1,hpcol2=9,9
+	local bar1,bar2={3,11,10},{9,10,7}
+	local hpcol1,hpcol2=bar1[1],bar2[1]
 	if en_hit then
 		if hitcnt>0 then
 			hitcnt-=1
@@ -1124,9 +1121,9 @@ function drw_kraken()
 	
 	if hitcnt>0 then
 		if plr_turn then
-			new_bubbs(30,90)
+			new_bubbs(30,90,14,6)
 		else
-			new_bubbs(60,30)
+			new_bubbs(60,30,14,6)
 		end
 	end
 	
@@ -1144,22 +1141,32 @@ function drw_kraken()
 	
 	if hittim>0 then
 		hittim-=1
-		?"\^w\^t"..hitmsg,mx-1,my,2
-		?"\^w\^t"..hitmsg,mx+1,my,2
-		?"\^w\^t"..hitmsg,mx,my-1,2
-		?"\^w\^t"..hitmsg,mx,my+1,2
-		?"\^w\^t"..hitmsg,mx,my,8
+		local col1,col2=8,10
+		if hitmsg=="miss!" then
+			col1,col2=6,13
+		end
+		?"\^w\^t"..hitmsg,mx-1,my,col1
+		?"\^w\^t"..hitmsg,mx+1,my,col1
+		?"\^w\^t"..hitmsg,mx,my-1,col1
+		?"\^w\^t"..hitmsg,mx,my+1,col1
+		?"\^w\^t"..hitmsg,mx,my,col2
 	else 
 		hittim=0
 	end
 	
-	sprint("krak",44,31,7,5)
-	rect(58,22,58-ens[en_cnt]-2,28,2)
+	sprint("krak",44,33,7,5)
+	rect(58,22,58-ens[en_cnt]-2,28,4)
+	line(58,29,58-ens[en_cnt]-2,29,5)
 	rectfill(57,23,57-en_hp,27,hpcol2)
+	rectfill(57,23,57-en_hp,25,bar2[2])
+	rectfill(57,23,57-en_hp,23,bar2[3])
 	
-	sprint("dredger",66,95,7,1)
-	rect(83,86,83+maxhp+2,92,2)
+	sprint("dredger",66,97,7,1)
+	rect(83,86,83+maxhp+2,92,1)
+	line(83,93,83+maxhp+2,93,1)
 	rectfill(84,87,84+hp,91,hpcol1)
+	rectfill(84,87,84+hp,89,bar1[2])
+	rectfill(84,87,84+hp,87,bar1[3])
 	
 	rectfill(0,105,127,127,2)
 	
@@ -1561,15 +1568,15 @@ function upd_parts()
 	end
 end
 
-function new_bubbs(_x,_y)
-	local amt=2+flr(rnd(6))
+function new_bubbs(_x,_y,_c,_amt)
+	local amt=_amt+flr(rnd(6))
 	for b=1,amt do
 	add(bubbs,{
 			x=_x+rnd(30),
 			y=_y-rnd(20),
 			yspd=-1,
 			r=rnd({1,3}),
-			c=12,
+			c=_c,
 			typ=1
 		})
 	end
@@ -1745,13 +1752,18 @@ function upd_battle()
 	
 	--plr health
 	if hp<=0 then
-			isgameover()
+		isgameover()
+	elseif en_hp<=0 then
+		en_ded=true
+		backtogame()
+	elseif en_fright then
+		backtogame()
+		debug[1]=wait
 	else
 		--plr selecting
 		plr_choosing()
 		--enemy
 		en_action()
-		backtogame()
 	end
 end
 
@@ -1828,7 +1840,11 @@ function attack()
 	if plr_turn then
 		atk_en()
 	else
-		atk_plr()
+		if rnd()<0.6 then
+			atk_plr()
+		else
+			atk_plr_miss()
+		end
 	end
 end
 
@@ -1847,6 +1863,16 @@ function atk_plr()
 	end
 end
 
+function atk_plr_miss()
+	sfx(52)
+	en_hit=true
+	hitmsg="miss!"
+	hitcnt=1
+	hittim=20
+	plr_turn=true
+end
+
+
 function atk_en()
 	local pwr=1
 	if gems_r>0 then
@@ -1854,35 +1880,31 @@ function atk_en()
 		pwr=2
 	end
 	if en_hp>0 then
-	sfx(56)
-	en_hp-=(ens[en_cnt]/4)*pwr
-	en_hit=true
-	hitcnt=7
-	hitmsg=tostr(rnd(txt))
-	hittim=20
-	plr_turn=false
+		sfx(56)
+		en_hp-=(ens[en_cnt]/4)*pwr
+		en_hit=true
+		hitcnt=7
+		hitmsg=tostr(rnd(txt))
+		hittim=20
+		plr_turn=false
 	end
-	--enemy health
 	if en_hp<=0 then
 		sfx(55)
-		krak=false
+		en_hp=0
 		en_ded=true
-		plr_turn=true
 		wait=120
-		backtogame()
-		return
 	end
 end
 
 function heal()
 	if gems_g>0 then
 		sfx(54)
+		new_bubbs(30,90,11,10)
 		hp=maxhp
 		gems_g-=1
 		plr_turn=false
 		bsel=1
 		wait=60
-		new_bubbs(30,90)
 	end
 end
 
@@ -1890,23 +1912,25 @@ function fright()
 	if gems_o>0 then
 		if en_hp>0 then
 			sfx(55)
-			krak=false
-			en_ded=true
+			new_bubbs(30,90,9,10)
 			en_fright=true
+			en_ded=true
 			wait=120
-			backtogame()
 			gems_o-=1
 		end
 	end
 end
 
 function backtogame()
-	if wait<=0 and not krak then
+	if wait<=0 then
 		mov_en=0
 		en_ded=false
 		en_fright=false
 		en_cnt+=1
 		trigbat=false
+		bsel=1
+		plr_turn=true
+		krak=false
 		_upd=upd_game
 		_drw=drw_game
 	end
@@ -2253,7 +2277,7 @@ d51e0000000140001402013040140301406011060110601103012000120001202013040130301206
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+2505000030726277261b726117260a726057260000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006
 010100000202102021020210202102021170211002100001000010000100001000010000100001000010000100001000010000100001000010000100001000010000100001000010000100001000010000100001
 290200001b0131f013220131f0231802318026180261d7261d7261f7262272622716277162771629016297162901627016270161f0161b0161b026180261802618026180211b0211d7211f7212b7213072137711
 00070000000001e0201c3201b0202a020263201f02026020360203332000020251201d130171300f1300913004130021200102001020000000000000000000000000000000000000000000000000000000000000
