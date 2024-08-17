@@ -13,9 +13,6 @@ __lua__
 -- opening last tile doesnt wait
 -- before win screen
 
--- enemy hits player when 
--- it dies
-
 -- tut screen
 
 
@@ -62,6 +59,8 @@ function _init()
 	shake=0
 	develop=0
 	devspeed=0
+	tut=false
+	tutcan=0
 	
 	hi=0
 	music(0,6000)
@@ -167,13 +166,13 @@ function upd_menu()
 		ly+=sin(t*0.008)*0.4
 	end
 	
-	if not bswap and 
-		btnp(❎) and t>60 then
-		startgame()
+	if not bswap and t>60 then
+		if (btnp(❎)) startgame()
+		if (btnp(🅾️)) starttut()
 	end
-	if bswap and 
-		btnp(🅾️) and t>60 then
-		startgame()
+	if bswap and t>60 then
+		if (btnp(🅾️)) startgame()
+		if (btnp(❎)) starttut()
 	end
 	
 	if wait>0 then
@@ -182,20 +181,21 @@ function upd_menu()
 		if wait<=0 then
 			devspeed=0
 			develop=0
-			ini_board(0)
 			t=0
 			music(2,6000)
-			_upd=upd_game
-			_drw=drw_game
 		end
 	end
 end
 
 function startgame()
 	sfx(58)
-	music(-1,1000)
 	wait=60
 	hp=maxhp
+	ini_board(0,8,8)
+	makegems()
+	tutcan=0
+	_upd=upd_game
+	_drw=drw_game
 end
 
 function drw_menu()
@@ -354,6 +354,7 @@ function upd_game()
 		if krak or trigbat then
 			devspeed=0
 			develop=0
+			music(7,4000)
 			_upd=upd_battleintro
 			_drw=drw_battleintro
 		end
@@ -387,10 +388,10 @@ function drw_game()
 	if shake>0 then
 		doshake(1)
 	end
-	drw_board()
-	drw_cursor()
-	drw_flags()
-	drw_wflags()
+	drw_board(13,4,3,13,2,2,6,6)
+	drw_flags(0,0)
+	drw_wflags(0,0)
+	drw_cursor(0,0)
 	if (not krak) camera()
 	drw_gemboard()
 	drw_scoreboard()
@@ -453,10 +454,119 @@ function drw_timer(_x,_y)
 	print(timer,_x+9,_y+3,1)
 	print(timer,_x+9,_y+2,7)
 end
+
+function starttut()
+	sfx(58)
+	wait=60
+	ini_board(0,3,3)
+	tiles[1].hasmine=true
+	tiles[9].hasmine=true
+	devspeed=0
+	develop=0
+	tut=true
+	tutcan=0
+	tutl=false
+	tutr=false
+	tutu=false
+	tutd=false
+	_upd=upd_tut
+	_drw=drw_tut
+end
+
+function drw_tut()
+	cls(1)
+	fadepal((100-develop)/100)
+	
+	sprint("\^t\^wtutorial",32,10,6,5)
+	
+	if tutcan<=7 then
+		drw_board(33,44,23,53,22,42,26,46)
+		drw_flags(22,40)
+		drw_wflags(22,40)
+	
+		--cursor
+		drw_cursor(20,40)
+	end
+	
+		if tutcan==0 then
+			print("move cursor",65,45,9)
+			print("with ⬅️⬆️⬇️➡️",65,52,9)
+			print("(all 4)",65,59,9)
+		elseif tutcan==1 then
+			print("plant a flag",65,45,9)
+			print("on the bottom",65,52,9)
+			print("right tile (🅾️)",65,59,9)
+		elseif tutcan==2 then
+			print("open up the",65,45,9)
+			print("center tile",65,52,9)
+			print("(❎)",65,59,9)
+		elseif tutcan==3 then
+			print("tiles open in",65,45,9)
+			print("a 3x3 grid",65,52,9)
+			print("(❎)",65,59,9)
+		elseif tutcan==4 then
+			print("tiles with a",65,45,9)
+			print("flag on don't",65,52,9)
+			print("open (❎)",65,59,9)
+		elseif tutcan==5 then
+			print("kraken tiles",65,45,9)
+			print("won't open",65,52,9)
+			print("automatic (❎)",65,59,9)
+		elseif tutcan==6 then
+			print("open the top",65,45,9)
+			print("left tile now",65,52,9)
+			print("(❎)",65,59,9)
+		elseif tutcan==7 then
+			print("kraken tiles",65,45,9)
+			print("start battles",65,52,9)
+			print("(❎)",65,59,9)
+		elseif tutcan==8 then
+			print("use gems to",65,45,9)
+			print("help win",65,52,9)
+			print("(❎)",65,59,9)
+			sspr(41,39,10,9,30,34+sin(t*0.02)*0.2)
+			sspr(51,39,10,9,44,48+sin(t*0.02)*0.2)
+			sspr(61,39,10,9,30,62+sin(t*0.02)*0.2)
+		end
+	
+	clip(90,75,37,52)
+	drw_diver()
+	clip()
+	drw_bubbs()
+	
+	
+	rect(0,0,127,127,9)
+end
+
+function upd_tut()
+	if t>500 then
+		t=0
+	else
+		t+=1
+	end
+	fadeeff(1)
+	
+	if wait>0 then
+		wait-=1
+	end
+	
+	upd_bubbs()
+	upd_tutcursor()
+	if (btn(⬅️)) tutl=true
+	if (btn(➡️)) tutr=true
+	if (btn(⬆️)) tutu=true
+	if (btn(⬇️)) tutd=true
+	
+	if tutl and tutr and tutu and tutd then
+		if (tutcan==0) tutcan=1
+	end
+	
+	upd_board()
+end
 -->8
 -- game play
 
-function ini_board(_s)
+function ini_board(_s,_col,_row)
 	
 	nomines=true
 	score=_s
@@ -487,8 +597,8 @@ function ini_board(_s)
 	fly=0
 	
 	
-	cols=8
-	rows=8
+	cols=_col
+	rows=_row
 	size=12
 	
 	--cursor
@@ -518,7 +628,12 @@ function ini_board(_s)
 	end--for i
 	ini_parts()
 	
-	gems_r=0
+	
+end--ini_board()
+
+
+function makegems()
+gems_r=0
 	gems_g=0
 	gems_o=0
 	
@@ -542,8 +657,7 @@ function ini_board(_s)
 			allgems-=1
 		end
 	end
-	
-end--ini_board()
+end
 
 function makemines()
 	--adding mines
@@ -574,22 +688,22 @@ function upd_board()
 	end--for
 end
 
-function drw_board()
+function drw_board(_x,_y,_x2,_y2,_x3,_y3,_sx,_sy)
 	for tl in all(tiles) do
 		pal({1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1})
 		sspr(10,0,2,12,
-							tl.id_x+13,tl.id_y+4)
+							tl.id_x+_x,tl.id_y+_y)
 		
-		--btm
+		--btm 3/13
 		sspr(0,10,12,2,
-							tl.id_x+3,tl.id_y+13)
+							tl.id_x+_x2,tl.id_y+_y2)
 		
 		pal()
 		
 		if t<100 then
 			fadepal((100-develop)/100)
 		end
-		sspr(tl.spx,tl.spy,12,12,2+tl.id_x,2+tl.id_y)
+		sspr(tl.spx,tl.spy,12,12,_x3+tl.id_x,_y3+tl.id_y)
 	
 	local _c
 		if tl.revealed and
@@ -604,7 +718,7 @@ function drw_board()
 			if tl.warn>=4 then
 				_c=14
 			end
-			print(tl.warn,6+tl.id_x,6+tl.id_y,_c)
+			print(tl.warn,_sx+tl.id_x,_sy+tl.id_y,_c)
 		end
 	end --for
 	
@@ -638,11 +752,11 @@ function drw_board()
 	
 end--drw_board()
 
-function drw_cursor()
+function drw_cursor(_ox,_oy)
 	for tl in all(tiles) do
 		if curx*size==tl.id_x and
 					cury*size==tl.id_y then
-					sspr(23,109,16,18,curx*size,cury*size)
+					sspr(23,109,16,18,curx*size+_ox,cury*size+_oy)
 		end
 	end
 end--drw_cursor()
@@ -761,24 +875,90 @@ function upd_cursor()
 	if t>10 then
 		movecursor()
 		
-		if bswap then
-			if btnp(❎) then
-				new_bubbs(86,100,12,4)
-				flagtile()
-			elseif btnp(🅾️) then
-				opentile()
+			if bswap then
+				if btnp(❎) then
+					new_bubbs(86,100,12,4)
+					flagtile()
+				elseif btnp(🅾️) then
+					opentile()
+				end
+			elseif not bswap then
+				if btnp(❎) then
+					opentile()
+				elseif btnp(🅾️) then
+					new_bubbs(86,100,12,4)
+					flagtile()
+				end
 			end
-		elseif not bswap then
-			if btnp(❎) then
-				opentile()
-			elseif btnp(🅾️) then
-				new_bubbs(86,100,12,4)
-				flagtile()
-			end
-		end
-		
 	end
 end--upd_cursor()
+
+function upd_tutcursor()
+	if t>10 then
+		movecursor()
+		
+		if tutcan>0 then
+			if bswap then
+				if btnp(❎) and tutcan==1then
+					new_bubbs(86,100,12,4)
+					flagtile()
+					tutcan=2
+				elseif btnp(🅾️) and tutcan==2 then
+					opentile()
+					tutcan=3
+				elseif btnp(🅾️) and tutcan==3 then
+					sfx(58)
+					tutcan=4
+				elseif btnp(🅾️) and tutcan==4 then
+					sfx(58)
+					tutcan=5
+				elseif btnp(🅾️) and tutcan==5 then
+					sfx(58)
+					tutcan=6
+				elseif btnp(🅾️) and tutcan==6 then
+					opentile()
+					tutcan=7
+				elseif btnp(🅾️) and tutcan==7 then
+					sfx(58)
+					tutcan=8
+				elseif btnp(🅾️) and tutcan==8 then
+					sfx(58)
+					music(0,6000)
+					_init()
+				end
+			elseif not bswap then
+				if btnp(❎) and tutcan==2 then
+					opentile()
+					tutcan=3
+				elseif btnp(❎) and tutcan==3 then
+					sfx(58)
+					tutcan=4
+				elseif btnp(❎) and tutcan==4 then
+					sfx(58)
+					tutcan=5
+				elseif btnp(❎) and tutcan==5 then
+					sfx(58)
+					tutcan=6
+				elseif btnp(❎) and tutcan==6 then
+					opentile()
+					tutcan=7
+				elseif btnp(❎) and tutcan==7 then
+					sfx(58)
+					tutcan=8
+				elseif btnp(❎) and tutcan==8 then
+					sfx(58)
+					music(0,6000)
+					_init()
+				elseif btnp(🅾️) and tutcan==1 then
+					new_bubbs(86,100,12,4)
+					flagtile()
+					tutcan=2
+				end
+			end
+		end
+	end
+end--upd_cursor()
+
 
 function checkgems(_t)
 	local p,pc,ns=0,0,0
@@ -871,22 +1051,22 @@ function flagtile()
 	end
 end--flagtile
 
-function drw_flags()
+function drw_flags(_ox,_oy)
 	for f in all(flags) do
 		if f.y~=f.dy then
 			f.y+=8
 		end
-		drw_flgsp(f.x,f.y,0)
+		drw_flgsp(f.x+_ox,f.y+_oy,0)
 	end
 end--drw_flags()
 
-function drw_wflags()
+function drw_wflags(_ox,_oy)
 	for f in all(flags) do
 		for t in all(tiles) do
 			if t.flag and t.revealed 
 			and t.id_x==f.x
 			and t.id_y==f.y then
-				drw_flgsp(f.x,f.y,1)
+				drw_flgsp(f.x+_ox,f.y+_oy,1)
 			end
 		end
 	end
@@ -920,7 +1100,10 @@ function opentile()
 					wait=100
 					trans=100
 					shake=10
-					krak=true
+					if not tut then
+						krak=true
+						music(-1,1000)
+					end
 					enhp=ens[1]
 					battletiles+=1
 				else
@@ -929,7 +1112,10 @@ function opentile()
 					score+=tilepoints
 					checkgems(tl)
 					opentiles+=1
-					if (nomines) makemines()
+					--tut
+					if not tut then
+						if (nomines) makemines()
+					end
 					checkaround(tl)
 				end
 			end
@@ -938,14 +1124,16 @@ end--opentile
 
 function checkaround(_t)
 	local a,b=-1,1
+	
+	
 	local fcount=0
 	
 	if (cury==0) a,b=0,1
-	if (cury==7) a,b=-1,0
+	if (cury==cols-1) a,b=-1,0
 		for _x=a,b do
 		for _y=-1,1 do
 		 if not (_x==0 and _y==0) then
-				local curtil=_t+_x+_y*8
+				local curtil=_t+_x+_y*cols
 				if tiles[curtil] then
 					if not tiles[curtil].revealed 
 					and not tiles[curtil].hasmine then
@@ -976,11 +1164,11 @@ end
 function checkaround2(_t)
 	local fcount=0
 	local a,b=-1,1
-	if (_t%8==1) a,b=0,1
-	if (_t%8==0) a,b=-1,0
+	if (_t%cols==1) a,b=0,1
+	if (_t%cols==0) a,b=-1,0
 		for _x=a,b do
 		for _y=-1,1 do
-			local curtil=_t+_x+_y*8
+			local curtil=_t+_x+_y*cols
 			if not (_x==0 and _y==0) then
 				if tiles[curtil] then
 					if tiles[curtil].hasmine then
@@ -1363,7 +1551,7 @@ function upd_win()
 	
 	if not bswap then
 		if btnp(❎) then
-			ini_board(newscore)
+			ini_board(newscore,8,8)
 			devspeed=0
 			develop=0
 			_upd=upd_game
@@ -1373,7 +1561,7 @@ function upd_win()
 		if btnp(🅾️) then
 			devspeed=0
 			develop=0
-			ini_board(newscore)
+			ini_board(newscore,8,8)
 			_upd=upd_game
 			_drw=drw_game
 		end
@@ -1755,10 +1943,11 @@ function upd_battle()
 		isgameover()
 	elseif en_hp<=0 then
 		en_ded=true
+		music(-1,2000)
 		backtogame()
 	elseif en_fright then
+		music(-1,2000)
 		backtogame()
-		debug[1]=wait
 	else
 		--plr selecting
 		plr_choosing()
@@ -1775,6 +1964,7 @@ function isgameover()
 			en_ded=false
 			en_fright=false
 			en_cnt=1
+			krak=false
 			getscore()
 			_upd=upd_gameover
 			_drw=drw_gameover
@@ -1931,6 +2121,7 @@ function backtogame()
 		bsel=1
 		plr_turn=true
 		krak=false
+		music(0,6000)
 		_upd=upd_game
 		_drw=drw_game
 	end
@@ -2226,17 +2417,17 @@ __label__
 
 __sfx__
 451e0000004100041102411024110f414124151541515415154151541515415124150c4151541515415154150c4150c4150c415154151541312414124140f4150f4150f415124150e4150c4110c4110000200000
-711e00000302303023030200302003020030230002300023000230302306023060230602303023030230002300023000230002000020000200302303023060230602303023030200002300020000230002300023
+701e00000302303023030200302003020030230002300023000230302306023060230602303023030230002300023000230002000020000200302303023060230602303023030200002300020000230002300023
 b91e00001e72524725277252772527725247251e7251b7251b7251e7251e7251e7231e7231e7251b725187251872518725187251b725217251b725157250c725097250c7250c7250c7230c723097250972309725
 391e00001572015722127200c720097200972209722097200c72012720127211272012720127221572218720187201572112720127201272012722127221872018720187211b7201b7201872012722127220f720
 311e00000c0140c0140c0140f0110f011120121501215012150151501515015120150c0121501215012150120c0110c0110c011150121501212012120150f0150f0150f015120151201512012150151501515015
 cd1e00000311303113031100311003110031130011300113001130311306113061130611303113031130011300113001130011000110001100311303113061130611303113031100011300110001130011300113
 d51e0000000140001402013040140301406011060110601103012000120001202013040130301206012060120301200012000120001202012040120301206012060120901309013060120a015040150201500015
 311e00000000000011000110f0140f01412012150121501215015150150901106011000111500015000150000c0110c0110c011150121501212012120150f0150f0150f015120151201512011000110000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+b91c00001e71524715277152771527715247151e7151b7151b7151e7151e7151e7131e7131e7151b715187151871518715187151b715217151b715157150c715097150c7150c7150c7130c713097150971309715
+491c00000601313013000000160006013130130000000000000000000006013130130000000000060131301306013130130601313013016000601313013000000000006013130130000000000060131301306013
+011c0000170250b0250e72500000170250e7250b025170250e7250e72500105180250b0250e7251802518025170250b0250e72500000000000e7250b02517025001050e7250e725160250b0250e7250e72500000
+311c00000311303113031100311003110031130011300113001130311306113061130611303113031130011300113001130011000110001100311303113061130611303113031100011300110001130011300113
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -2296,4 +2487,8 @@ __music__
 00 04054344
 00 05060444
 02 07044644
+00 0b48094a
+01 0b080944
+00 0b08090a
+02 0b08090a
 
