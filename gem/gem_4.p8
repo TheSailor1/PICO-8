@@ -61,6 +61,7 @@ function _init()
 	tut=false
 	tutcan=0
 	score=0
+	co=0
 	
 	hi=0
 	music(0,6000)
@@ -324,6 +325,8 @@ function drw_menu()
 	print(t1,10,y1,c1)
 	print(t2,70,y2,c2)
 	
+	
+	?"v1.5",3,3,7
 	end
 	
 	local s=tostr("hiscore "..hi)
@@ -1615,8 +1618,10 @@ end
 -- tools
 
 function fadeeff(n)
-	devspeed+=n
-	develop+=devspeed
+	if develop<100 then
+		devspeed+=n
+		develop+=devspeed
+	end
 	develop=min(100,develop)
 end
 
