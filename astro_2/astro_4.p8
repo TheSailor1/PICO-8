@@ -21,8 +21,8 @@ function _init()
 	
 	ini_parts()
 	ini_meteors()
-	ini_menu()
---	ini_game()
+--	ini_menu()
+	ini_game()
 end
 
 function ini_menu()
@@ -33,7 +33,7 @@ function ini_intro()
 	wtmr=120
 	anitmr=0
 	txt_cnt=1
-	
+	tmr=0
 	ad_star(127,100)
 	
 	new_scn(upd_intro,drw_intro)
@@ -77,10 +77,19 @@ function ini_game()
 	jmpheight=2.8
 	plrstat="rn"
 	grav=0.25
-	shpx=127
+	shpx=240
 	gspeed=0
 	movshp=0.9
 	finline=26
+	
+	mov_marker=false
+	level=1
+	aliencnt=1
+	allaliens={
+		split"1,2,3,2,1,5,3,1"
+	}
+	curaliens={}
+	spawn_alien(aliencnt)
 end
 
 -->8
@@ -119,7 +128,7 @@ function drw_intro()
 	
 	bods={"st","st","ex","st","ex","ex","st","ex"}
 	drw_ast(32,191-ly,bods[txt_cnt])
-	drw_ali(60,190-ly)
+	drw_alien(60,190-ly)
 	
 	txt={
 		"so i stood there...\nlooking her in the eye.\nand i said to her,\n\"don't touch my cookies!\"",
@@ -162,6 +171,10 @@ function drw_game()
 		map(0,0,mapx-i*128,mapy,16,2)
 	end
 	
+	--aliens
+	for a in all(curaliens) do
+		drw_alien(a.x,a.y)
+	end
 	
 	if foundship then
 		if (shpx-plrx)<30 then
@@ -177,6 +190,7 @@ function drw_game()
 	drw_hud()
 	drw_boost()
 	
+	?#curaliens,2,2,8
 end
 
 -->8
@@ -235,7 +249,7 @@ function upd_game()
 	upd_plr()
 	upd_hud()
 	
-	
+	upd_aliens()
 	
 	
 	if frcnt<5.9 then
@@ -258,16 +272,21 @@ function upd_hud()
 		sfx"58"
 		boost=(distance*0.10)*scale
 		oxy-=1
-		oxyboost=1.5
+		oxyboost=3
 		useboost()
 	end
 	
+	if #curaliens==0 then
+		foundship=true
+	end
+				timer=flr))
+	
 	if not foundship then
-		if t>=60 then
-			t=0
+		if mov_marker then
+			mov_marker=false
 			if (oxyboost>0) oxyboost=0
 			if timer>0 then
-				timer-=speed
+--				timer-=speed
 				marker_x+=(speed+boost)*scale
 				boost=0
 			else
@@ -633,6 +652,7 @@ function upd_plr()
 		plrdy=0
 		plry=ground
 		onground=true
+		if (oxyboost>0) oxyboost-=0.1
 		if moving then
 			plrstat="rn"
 		else
@@ -649,7 +669,36 @@ end
 -->8
 -- aliens
 
-function drw_ali(_x,_y)
+function spawn_alien(_n)
+	for i=1,
+	allaliens[level][_n] do
+		add(curaliens,{
+			x=227+(i*24),
+			y=64,
+			dx=1,
+			dy=0
+			})
+	end
+end
+
+function upd_aliens()
+	for a in all(curaliens) do
+		if a.x>-26 then
+			a.x-=a.dx+oxyboost
+		else
+			del(curaliens,a)
+			if #curaliens==0 then
+				if aliencnt<#allaliens[level] then
+					aliencnt+=1
+					spawn_alien(aliencnt)
+					mov_marker=true
+				end
+			end
+		end
+	end
+end
+
+function drw_alien(_x,_y)
 	--body
 	sspr(0,24,20,10,_x,_y)
 	--head
