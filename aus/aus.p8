@@ -69,6 +69,8 @@ end
 
 function ini_game()
 	
+	wtime=0
+	
 	--mkae dice
 	dices={}
 	curhand={}
@@ -81,6 +83,8 @@ function ini_game()
 	newround=false
 	dicesel=false
 	hp=20
+	plrwon=nil
+	plrdraw=nil
 	
 	combos={
 		123,
@@ -117,13 +121,10 @@ function ini_game()
 	ini_ens()
 	ini_parts()
 	
+	confetti()
+	
 	_upd=upd_game
 	_drw=drw_game
-end
-
-function ini_win()
-	_upd=upd_win
-	_drw=drw_win
 end
 
 function upd_win()
@@ -131,14 +132,8 @@ function upd_win()
 end
 
 function drw_win()
-	cls(3)
 	cprint("you won",32,9)
 	cprint("p:"..handscore.." e:"..enscore,64,7)
-end
-
-function ini_lose()
-	_upd=upd_lose
-	_drw=drw_lose
 end
 
 function upd_lose()
@@ -146,14 +141,8 @@ function upd_lose()
 end
 
 function drw_lose()
-	cls(8)
 	cprint("you lose",32,2)
 	cprint("p:"..handscore.." e:"..enscore,64,7)
-end
-
-function ini_draw()
-	_upd=upd_draw
-	_drw=drw_draw
 end
 
 function upd_draw()
@@ -161,7 +150,6 @@ function upd_draw()
 end
 
 function drw_draw()
-	cls(6)
 	cprint("draw",32,13)
 	cprint("p:"..handscore.." e:"..enscore,64,13)
 end
@@ -174,7 +162,32 @@ function upd_menu()
 end
 
 function upd_game()
-	if rolls>0 then
+	if state=="play" then
+		choosedice()
+		holddice()
+		rollselection()
+		checkforsix()
+	end
+	
+	if state=="ready" then
+		rollselection()
+	end
+	
+	if wtime~=nil then
+			wtime-=1
+	end
+		
+	if wtime==0 and rolls==0 then
+		confetti()
+	end
+	
+	debug[1]=wtime
+	
+	upd_ens()
+	upd_parts()
+end
+
+function choosedice()
 		if btnp(➡️) and not newround and highdice<3 then
 			highdice+=1
 			sfx"63"
@@ -183,7 +196,6 @@ function upd_game()
 			highdice-=1
 			sfx"63"
 		end
-	end
 	
 	if btnp(⬆️) and 
 	not dices[highdice].sel and
@@ -203,11 +215,18 @@ function upd_game()
 			dices[highdice].y+32,
 			1,0.3,{2,4,5})
 	end
+end
+
+function holddice()
 	if btnp(🅾️) and not newround then
 		rolls=0
+		showdice=3
+		confetti()
 	end
-	
-	--roll dice
+end
+
+function rollselection()
+	--check for selected dice
 	local cnt=0
 	for i=1,3 do
 		if dices[i].sel then
@@ -217,23 +236,33 @@ function upd_game()
 	if cnt==0 then
 		dicesel=false
 	end
-	if btnp(❎) then
-		if dicesel  or newround then
-			for i=1,3 do
-				if dices[i].sel then
-					rollfx(0,dices[i].x+16,dices[i].y)
-					mak_sparks(
-						122,
-						dices[i].x+16,
-						dices[i].y,
-						3,0.6,{4,9,10})
-				end
+	if btnp(❎) and dicesel then
+		sfx"60"
+		if state=="ready" then
+			state="play"
+			showdice=0
+			rolls=3
+			enroll()
+		end
+		
+		for i=1,3 do
+			if dices[i].sel then
+				rollfx(0,dices[i].x+16,dices[i].y)
+				mak_sparks(122,dices[i].x+16,dices[i].y,3,0.6,{4,9,10})
+				dices[i].num=1+flr(rnd(6))
+				dices[i].sel=false
 			end
-			rolldice()
+		end
+		rolls-=1
+		showdice+=1
+		gethand()
+		if rolls==0 then
+			wtime=30
 		end
 	end
-	
-	--check for six
+end
+
+function checkforsix()
 	local sixes={}
 	for i=1,3 do
 		if not newround and
@@ -253,23 +282,25 @@ function upd_game()
 		gethand()
 		sixes={}
 	end
-	
-	if rolls==0 then
-		checkwin()
+end
+
+function confetti()
+	state="ready"
+	for i=1,3 do
+		mak_sparks(
+				400,
+				dices[i].x+16,
+				dices[i].y,
+				5,0.3,{5,7,6})
+		if i==3 then
+			for d in all(dices) do
+				sfx"62"
+				d.sel=true
+				dicesel=true
+			end
+			wtime=nil
+		end
 	end
-	
---	if rolls==0 and not roundend then
---		roundend=true
---		rolls=3
---		for i=1,3 do
---			dices[i].sel=true
---			newround=true
---		end
---	end
-	
-	
-	upd_ens()
-	upd_parts()
 end
 -->8
 --draws
@@ -345,36 +376,49 @@ function drw_game()
 	print("rolls: "..rolls,90,114,10)
 	
 	--cursor
-	local oy=0
-	for i=1,#dices do
-		if dices[highdice].sel then
-			oy=20
-		end
-	end
-	
-	if rolls>0 and not newround then
+	if state=="play" then
+		local oy=0
 		local sx,sy
+		for i=1,#dices do
+			if dices[highdice].sel then
+				oy=20
+			end
+		end
 		if dices[highdice].num==1 then
 			sx,sy=51,50
 		else
 			sx,sy=50,16
 		end
 		sspr(sx,sy,10,11,24+((highdice-1)*35),(48-oy)+sin(time()))
-		pal()
 	end
 	
 	local s,sc="",11
-	if newround then
+	if state=="ready" then
 		s="new hand ❎"
 		sc=9
-	elseif dicesel then
-		s="roll again ❎"
-	else
-		s="keep hand 🅾️"
+	elseif state=="play" then
+		if dicesel then 
+			s="roll again ❎"
+		else
+			s="keep hand 🅾️"
+		end
 	end
+	
 	cprint(s,102,sc)
 	
 	drw_parts()
+	
+	if plrwon~=nil then 
+		if plrwon==true then
+			drw_win()
+		else
+			drw_lose()
+		end
+	else
+		if plrdraw==true then
+			drw_draw()
+		end
+	end
 end
 -->8
 --tools
@@ -421,23 +465,6 @@ function dots2(_x,_y,_num)
 		sspr(sx,96,6,10,_x,_y)
 end
 
-function rolldice()
-	sfx"60"
-	if rolls>0 then
-		for i=1,3 do
-			if dices[i].sel then
-				dices[i].num=1+flr(rnd(6))
-				dices[i].sel=false
-			end
-		end
-		if not newround then
-			rolls-=1
-			showdice+=1
-		end
-		gethand()
-	end
-	newround=false
-end
 
 function bubsort_s(a)
 	local itemcount=#a
@@ -542,9 +569,9 @@ end
 
 function checkwin()
 	if plrcombo and not encombo then
-		ini_win()
+		plrwin=true
 	elseif encombo and not plrcombo then
-		ini_lose()
+		plrwin=false
 	elseif plrcombo and encombo then
 		for i=1,#combos do
 			if tonum(handscore)==combos[i] then
@@ -555,19 +582,19 @@ function checkwin()
 		end
 		
 		if plrrank>enrank then
-			ini_win()
+			plrwon=true
 		elseif plrrank<enrank then
-			ini_lose()
+			plrwon=false
 		elseif plrrank==enrank then
-			ini_draw()
+			plrdraw=true
 		end
 	else
 		if tonum(handscore)>tonum(enscore) then
-			ini_win()
+			plrwon=true
 		elseif tonum(handscore)<tonum(enscore) then
-			ini_lose()
+			plrwon=false
 		else
-			ini_draw()
+			plrdraw=false
 		end
 	end
 end
