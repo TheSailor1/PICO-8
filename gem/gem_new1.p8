@@ -1,15 +1,53 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
--- gem dredging
+-- gemstone dredging
 -- by the sailor
+
+-- save hiscore
+
+-------------------------
+-- cost of gems increases with
+-- levels
+
+-- end a round with a battle
+-- - improve battle system
+--   - variants that sway the 
+--     fight:
+--     - surge, miss, 
+-- - add more enemy types
+--   - jellyfish
+--   - seal
+--   - shark
+--   - orca
+
+-- have rare gems the deeper
+-- the player goes
+
+-- treasure finds
+-- items that a player unlocks
+
+-- levels unlock diver skins
+cartdata("thesailor_gemdredging_1")
+poke(0x5600,unpack(split"8,8,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,63,63,63,63,63,63,0,0,0,63,63,63,0,0,0,0,0,63,51,63,0,0,0,0,0,51,12,51,0,0,0,0,0,51,0,51,0,0,0,0,0,51,51,51,0,0,0,0,48,60,63,60,48,0,0,0,3,15,63,15,3,0,0,62,6,6,6,6,0,0,0,0,0,48,48,48,48,62,0,99,54,28,62,8,62,8,0,0,0,0,24,0,0,0,0,0,0,0,0,0,12,24,0,0,0,0,0,0,12,12,0,0,0,10,10,0,0,0,0,0,4,10,4,0,0,0,0,0,0,0,0,0,0,0,0,12,12,12,12,12,0,12,0,0,54,54,0,0,0,0,0,0,54,127,54,54,127,54,0,8,62,11,62,104,62,8,0,0,51,24,12,6,51,0,0,14,27,27,110,59,59,110,0,12,12,12,0,0,0,0,0,56,28,14,14,14,28,56,0,14,28,56,56,56,28,14,0,0,54,28,127,28,54,0,0,0,28,28,127,127,28,28,0,0,0,0,0,0,12,12,6,0,0,0,62,62,0,0,0,0,0,0,0,28,28,28,0,96,112,56,28,14,7,3,0,62,127,119,119,119,127,62,0,60,62,60,60,60,60,60,0,62,123,123,60,14,127,127,0,62,123,123,60,123,123,62,0,115,115,115,127,127,112,112,0,127,127,15,63,124,127,63,0,62,63,7,63,119,119,62,0,127,127,56,28,14,14,14,0,62,127,119,62,119,127,62,0,62,119,119,126,112,126,62,0,0,12,12,0,12,12,0,0,0,12,12,0,12,14,6,0,48,56,28,14,28,56,48,0,0,62,62,0,62,62,0,0,6,14,28,56,28,14,6,0,30,127,115,56,28,0,28,0,0,30,51,59,59,3,30,0,0,62,126,96,126,111,126,0,7,7,63,127,111,127,63,0,62,127,111,15,111,127,62,0,112,112,126,127,111,127,62,0,62,127,111,127,7,127,126,0,30,31,7,31,31,7,7,0,0,126,127,111,127,96,126,62,7,7,63,127,111,111,111,0,28,28,0,28,28,28,28,0,48,0,56,48,48,48,51,30,3,3,51,27,15,27,51,0,12,12,12,12,12,12,56,0,0,0,99,119,127,107,99,0,0,0,63,99,99,99,99,0,0,0,62,99,99,99,62,0,0,0,63,99,99,63,3,3,0,0,126,99,99,126,96,96,0,0,62,99,3,3,3,0,0,0,62,3,62,96,62,0,12,12,62,12,12,12,56,0,0,0,99,99,99,99,126,0,0,0,99,99,34,54,28,0,0,0,99,99,107,127,54,0,0,0,99,54,28,54,99,0,0,0,99,99,99,126,96,62,0,0,127,112,28,7,127,0,62,62,14,14,14,62,62,0,3,7,14,28,56,112,96,0,62,62,56,56,56,62,62,0,12,30,18,0,0,0,0,0,0,0,0,0,0,0,30,0,12,24,0,0,0,0,0,0,62,127,119,127,127,119,119,0,63,119,119,63,127,119,63,0,62,127,119,7,119,127,62,0,31,63,119,119,119,127,63,0,127,127,15,63,15,127,127,0,127,127,7,63,63,7,7,0,126,127,7,119,119,127,62,0,119,119,119,127,119,119,119,0,127,127,62,62,62,127,127,0,126,126,124,124,124,127,63,0,119,119,63,31,63,119,119,0,15,15,15,15,15,127,127,0,99,119,127,127,119,119,119,0,115,119,127,127,127,119,103,0,62,127,119,119,119,127,62,0,63,119,119,127,63,7,7,0,62,127,119,119,119,63,110,0,63,119,119,63,63,119,119,0,126,127,15,62,120,127,63,0,127,127,28,28,28,28,28,0,119,119,119,119,119,127,62,0,119,119,119,119,119,62,28,0,119,119,119,127,127,119,99,0,119,119,62,28,62,119,119,0,119,119,119,127,62,28,28,0,127,127,120,60,30,127,127,0,56,60,14,7,14,60,56,0,0,24,24,0,24,24,0,0,7,15,28,56,28,15,7,0,0,0,110,59,0,0,0,0,0,0,0,0,0,0,0,0,127,127,127,127,127,127,127,0,85,42,85,42,85,42,85,0,65,99,127,93,93,119,62,0,62,99,99,119,62,65,62,0,17,68,17,68,17,68,17,0,4,12,124,62,31,24,16,0,28,38,95,95,127,62,28,0,34,119,127,127,62,28,8,0,42,28,54,119,54,28,42,0,28,28,62,93,28,20,20,0,8,28,62,127,62,42,58,0,62,103,99,103,62,65,62,0,62,127,93,93,127,99,62,0,24,120,8,8,8,15,7,0,62,99,107,99,62,65,62,0,8,20,42,93,42,20,8,0,0,0,0,85,0,0,0,0,62,115,99,115,62,65,62,0,8,28,127,28,54,34,0,0,127,34,20,8,20,34,127,0,62,119,99,99,62,65,62,0,0,10,4,0,80,32,0,0,17,42,68,0,17,42,68,0,62,107,119,107,62,65,62,0,127,0,127,0,127,0,127,0,85,85,85,85,85,85,85,0"))
 
 function _init()
 	
-	--butt swap
-	bswap=false
-	menuitem(1,"swap x/z", butt_swap)
+	hi=tostr(dget(0),2)
+	level=1
 	
+	
+	multi_circfill=multi(circfill)
+	multi_rect=multi(rect)
+	multi_rectfill=multi(rectfill)
+	multi_line=multi(line)
+	multi_sspr=multi(sspr)
+	multi_pset=multi(pset)
+	
+	--butt swap
+	menuitem(1,"swap ❎/🅾️", butt_swap)
+	bswap=false
+
 	fadetable={
     split"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
     split"1,1,1,1,1,1,1,0,0,0,0,0,0,0,0",
@@ -28,8 +66,10 @@ function _init()
     split"14,14,14,13,4,4,2,2,2,2,2,1,1,0,0",
     split"15,15,6,13,13,13,5,5,5,5,5,1,1,0,0"
 	}
-	t,trans,wait,shake,develop,devspeed,tutcan,score,co,tut,hi=0,0,0,0,0,0,0,0,0,false,0
+	t,trans,wait,shake,develop,devspeed,tutcan,score,co,tut=0,0,0,0,0,0,0,0,0,false
 	poptim=0
+	
+	btnz,btnx="🅾️","❎"
 	
 	mcnt=0
 	music(0,3000)
@@ -40,7 +80,7 @@ function _init()
 	_drw=drw_splash
 	
 	--★
-	showmines=false
+	showmines=true
 	showgems=false
 end
 
@@ -61,18 +101,10 @@ function upd_splash()
 	
 	fadeeff(1)
 	
-	if t>=120 or btnp(5) or btnp(4) then
+	if t>=120 or btnp"5" or btnp"4" then
 		resetdev()
-		ly=-50
-		sy=100
-		float=true
-		sf=true
-		t=0
-		wait=-1
-		co=0
-		cx=0
-		cpass=0
-		gy=-70
+		ly,sy,float,sf,t,wait,co,cx,cpass,gy=-50,100,true,true,0,-1,0,0,0,-70
+		
 		_upd=upd_menu
 		_drw=drw_menu
 	end
@@ -84,7 +116,7 @@ function drw_splash()
 	
 	drw_bkg(0,0,127,127,0)
 	
-	cprint("praeberi fari",100,1)
+	print("\14 praeberi fari",6,100,1)
 	?sp_logo,40,40
 end
 
@@ -118,12 +150,12 @@ function upd_menu()
 	end
 	
 	if not bswap and t>60 then
-		if (btnp(5)) startgame()
-		if (btnp(4)) starttut()
+		if (btnp"5") startgame()
+		if (btnp"4") starttut()
 	end
 	if bswap and t>60 then
-		if (btnp(4)) startgame()
-		if (btnp(5)) starttut()
+		if (btnp"4") startgame()
+		if (btnp"5") starttut()
 	end
 	
 	waittimer()
@@ -190,36 +222,46 @@ function drw_menu()
 	circfill((45+cx)-co,20,6,7)
 	
 	
-	circfill(5,60,6,7)
-	circfill(14,60,8,7)
-	circfill(25,60,4,7)
-	circfill(65,60,4,7)
-	circfill(75,60,8,7)
-	circfill(83,60,6,7)
-	circfill(90,60,6,7)
-	circfill(98,60,4,7)
-	circfill(102,60,4,7)
-	circfill(110,60,8,7)
-	circfill(120,60,8,7)
+	multi_circfill
+	[[5,60,6,7
+	14,60,8,7
+	25,60,4,7
+	65,60,4,7
+	75,60,8,7
+	83,60,6,7
+	90,60,6,7
+	98,60,4,7
+	102,60,4,7
+	110,60,8,7
+	120,60,8,7]]
 	
-	rectfill(0,62,127,70,7)
-	rectfill(0,70,127,127,13)
-	rectfill(0,105,127,127,1)
+	multi_rectfill
+	[[
+	0,62,127,70,7
+	0,70,127,127,13
+	0,105,127,127,1
+	]]
 	
-	line(0,70,127,70,12)
-	line(0,71,127,71,12)
-	line(2,73,125,73,12)
-	line(64,75,104,75,12)
-	line(110,75,124,75,12)
+	multi_line
+	[[
+	0,70,127,70,12
+	0,71,127,71,12
+	2,73,125,73,12
+	64,75,104,75,12
+	110,75,124,75,12
+	]]
 	
 	fillp(0x5f5f)
 	rectfill(0,105,127,109,29)
 	fillp()
 	
 	--birds
-	sspr(49,31,3,3,55,32)
-	sspr(52,31,5,3,65,22)
-	sspr(57,31,5,3,75,32)
+	multi_sspr
+	[[
+	49,31,3,3,55,32
+	52,31,5,3,65,22
+	57,31,5,3,75,32
+	]]
 	
 	--boat
 	sspr(36,49,55,30,15,46+sin((t%650)*0.003))
@@ -243,11 +285,11 @@ function drw_menu()
 		
 		local t1,t2
 		if not bswap then
-			t1="x play"
-			t2="z tutorial"
+			t1="❎ play"
+			t2="🅾️ tutorial"
 		else
-			t1="z play"
-			t2="x tutorial"
+			t1="🅾️ play"
+			t2="❎ tutorial"
 		end
 		
 		if bswap then
@@ -268,10 +310,10 @@ function drw_menu()
 	print(t2,70,y2,c2)
 	
 	
-	?"v1.9",3,3,7
+	?"v2",3,3,7
 	end
 	
-	local s=tostr("hiscore "..tostr(hi,2))
+	local s=tostr("hiscore "..tostr(dget(0),2))
 	local wd=(#s*6)-10
 	sspr(69,0,3,5,58,1)
 	sspr(69,0,3,5,58+wd-8,1)
@@ -284,10 +326,13 @@ function drw_menu()
 	clip()
 	
 	pset(60,7,10)
-	line(64,7,65,7,10)
-	line(80,7,81,7,10)
-	line(84,7,85,7,10)
 	
+	multi_line
+	[[
+	64,7,65,7,10
+	80,7,81,7,10
+	84,7,85,7,10
+	]]
 end
 
 function upd_game()
@@ -360,18 +405,26 @@ function upd_game()
 end
 
 function drw_game()
+	
 	cls()
 	
 	fadepal((100-develop)/100)
 	
-	rectfill(0,0,127,127,6)
+	bgcol=split"0xffff,0xfdff,0xfdf7,0xbdb5,0x8520"
+	bgcol2=split"108,108,205,205,209"
+	bgcol3=split"12,12,13,5,0"
+	
+	fillp(bgcol[level])
+	rectfill(0,0,127,127,bgcol2[level])
+	fillp()
+	
 	rectfill(0,90,127,127,12)
 	
 	fillp(▒)
-	circfill(117,117,50,12)
-	circfill(120,50,10,12)
-	circfill(104,60,4,12)
-	circfill(104,40,2,12)
+	circfill(117,117,50,bgcol3[level])
+	circfill(120,50,10,bgcol3[level])
+	circfill(104,60,4,bgcol3[level])
+	circfill(104,40,2,bgcol3[level])
 	fillp()
 	
 	circfill(117,117,31,1)
@@ -420,6 +473,7 @@ function drw_game()
 	
 	drw_bubbs()
 	
+	?level,2,2,8
 end
 
 
@@ -427,9 +481,11 @@ end
 function butt_swap()
 	if not bswap then
 		bswap=true
+		btnz,btnx="❎","🅾️"
 	else
 		bswap=false
-	end
+		btnz,btnx="🅾️","❎"
+end
 	return
 end
 
@@ -452,20 +508,26 @@ function drw_timer(_x,_y)
 end
 
 function starttut()
-	tut=true
 	sfx"58"
 	ini_board(0,3,3)
+	tut,tutcan,tutl,tutr,tutu,tutd,wait=true,0,false,false,false,false,60
 	tiles[1].hasmine=true
 	tiles[9].hasmine=true
-	tutcan=0
-	tutl=false
-	tutr=false
-	tutu=false
-	tutd=false
-	wait=60
 end
 
 function drw_tut()
+	tuttext={
+		{"the cursor","use the arrows","to move in all","4 directions"},
+		{"plant a flag","move to the","bottom right","tile and","press "..btnz},
+		{"mining tiles","move to the","centre tile","and press "..btnx},
+		{"nine tiles","tiles mine in","a 3x3 grid.","press "..btnx},
+		{"flagged tiles","tiles with","flags are","not mined.","press "..btnx},
+		{"krakens","unmined tiles","with no flag","are battles.","press "..btnx},
+		{"avoid krakens","now, mine the","top-left tile."},
+		{"kraken battles","mine a kraken","and you will","have to fight.","press "..btnx},
+		{"gem powers","use mined gems","to help win","kraken fights.","press "..btnx}
+	}
+	
 	cls()
 	fadepal((100-develop)/100)
 	
@@ -474,42 +536,24 @@ function drw_tut()
 	sprint("\^t\^wtutorial",32,10,6,5)
 	
 	if tutcan<=7 then
-		drw_board(33,44,23,53,22,42,26,46)
-		drw_flags(22,40)
-		drw_wflags(22,40)
-		--cursor
-		drw_cursor(20,40)
+		drw_board(30,44,20,53,19,42,23,46)
+		drw_flags(17,40)
+		drw_wflags(17,40)
+		drw_cursor(17,40)
+	elseif tutcan==8 then
+		?sp_krak,22,30
+		sspr(41,39,10,9,22,70+sin(t*0.02)*0.2)
+		sspr(51,39,10,9,34,70+sin(t*0.02)*0.2)
+		sspr(61,39,10,9,46,70+sin(t*0.02)*0.2)
 	end
 	
-	local btnz,btnx
-	if bswap then
-		btnz,btnx="x","z"
-	else
-	 btnz,btnx="z","x"
+	
+	for j=1,#tuttext[tutcan+1] do
+		tutcol=9
+		if (j>1) tutcol=6
+		print(tuttext[tutcan+1][j],65,45+((j-1)*7),tutcol)
 	end
 	
-		if tutcan==0 then
-			tutprint({"move cursor","with ⬅️⬆️⬇️➡️","(all 4)"})
-		elseif tutcan==1 then
-			tutprint({"plant a flag","on the bottom","right tile "..btnz})
-		elseif tutcan==2 then
-			tutprint({"open up the","center tile",btnx})
-		elseif tutcan==3 then
-			tutprint({"tiles open in","a 3x3 grid",btnx})
-		elseif tutcan==4 then
-			tutprint({"tiles with a","flag on don't","open "..btnx})
-		elseif tutcan==5 then
-			tutprint({"kraken tiles","won't open","automatic "..btnx})
-		elseif tutcan==6 then
-			tutprint({"open the top","left tile now",btnx})
-		elseif tutcan==7 then
-			tutprint({"kraken tiles","start battles",btnx})
-		elseif tutcan==8 then
-			tutprint({"use gems to","help win",btnx})
-			sspr(41,39,10,9,30,34+sin(t*0.02)*0.2)
-			sspr(51,39,10,9,44,48+sin(t*0.02)*0.2)
-			sspr(61,39,10,9,30,62+sin(t*0.02)*0.2)
-		end
 	
 	clip(90,75,37,52)
 	drw_diver()
@@ -525,24 +569,27 @@ function upd_tut()
 	fadeeff(5)
 	
 	if wait<=0 and wait~=-1 then
-			hp=maxhp
+			music(2,6000)
+			hp,tutcan,tut,t=maxhp,0,false,0
 			ini_board(0,8,8)
 			makegems()
-			tutcan=0
-			tut=false
-			t=0
-			music(2,6000)
 			resetdev()
 			_upd=upd_game
 			_drw=drw_game
 	end
 	
+	if bswap then
+		btnz,btnx="❎","🅾️"
+	else
+	 btnz,btnx="🅾️","❎"
+	end
+	
 	upd_bubbs()
 	upd_tutcursor()
-	if (btn(0)) tutl=true
-	if (btn(1)) tutr=true
-	if (btn(2)) tutu=true
-	if (btn(3)) tutd=true
+	if (btn"0") tutl=true
+	if (btn"1") tutr=true
+	if (btn"2") tutu=true
+	if (btn"3") tutd=true
 	
 	if tutl and tutr and tutu and tutd then
 		if (tutcan==0) tutcan=1
@@ -554,27 +601,8 @@ end
 -- game play
 
 function ini_board(_s,_col,_row)
-	nomines=true
-	score=_s
-	opentiles=0
-	tilepoints=10
-	f_points=0
-	r_points=0
-	g_points=0
-	o_points=0
-	gems_r=0
-	gems_g=0
-	gems_o=0
-	usegem=0
-	flagtiles=0
-	battletiles=0
-	gtimer=0
-	timer=0
-	allflags=10
+	nomines,score,opentiles,tilepoints,f_points,r_points,g_points,o_points,gems_r,gems_g,gems_o,usegem,flagtiles,battletiles,gtimer,timer,allflags,krak,fw,allmines=true,_s,0,10,0,0,0,0,0,0,0,0,0,0,0,0,10,false,4,10
 	plrflags=allflags
-	krak=false
-	fw=4
-	allmines=10
 	totmines=allmines
 	
 	tiles={}
@@ -585,8 +613,6 @@ function ini_board(_s,_col,_row)
 	flags={}
 	
 	fly=0
-	
-	
 	cols=_col
 	rows=_row
 	size=12
@@ -672,6 +698,8 @@ function upd_board()
 end
 
 function drw_board(_x,_y,_x2,_y2,_x3,_y3,_sx,_sy)
+	if (not tut) rectfill(4,4,96,96,4)
+	
 	for tl in all(tiles) do
 		pal({1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1})
 		sspr(10,0,2,12,
@@ -745,31 +773,54 @@ function drw_cursor(_ox,_oy)
 end--drw_cursor()
 
 function drw_gemboard()
-	sspr(66,0,21,14,103,1)
+	multi_sspr
+	[[66,0,21,14,103,1
+	87,0,13,12,103,16
+	100,0,13,12,103,28
+	113,0,13,13,103,40]]
 	
-	sspr(87,0,13,12,103,16)
-	sspr(100,0,13,12,103,28)
-	sspr(113,0,13,13,103,40)
+	multi_rectfill
+	[[
+	116,19,122,27,1
+	117,20,121,26,14
+	]]
 	
-	rectfill(116,19,122,27,1)
-	rectfill(117,20,121,26,14)
-	pset(121,20,15)
-	pset(117,26,15)
+	multi_pset
+	[[
+	121,20,15
+	117,26,15
+	]]
+	
 	line(118,28,122,28,1)
 	print(gems_r,118,21,2)
 	
-	rectfill(116,31,122,39,1)
-	rectfill(117,32,121,38,11)
-	pset(121,32,10)
-	pset(117,38,10)
+	multi_rectfill
+	[[
+	116,31,122,39,1
+	117,32,121,38,11
+	]]
+	
+	multi_pset
+	[[
+	121,32,10
+	117,38,10
+	]]
+	
 	line(118,40,122,40,1)
 	print(gems_g,118,33,3)
 	
+	multi_rectfill
+	[[
+	116,43,122,51,1
+	117,44,121,50,9
+	]]
 	
-	rectfill(116,43,122,51,1)
-	rectfill(117,44,121,50,9)
-	pset(121,44,10)
-	pset(117,50,10)
+	multi_pset
+	[[
+	121,44,10
+	117,50,10
+	]]
+	
 	line(118,52,122,52,1)
 	print(gems_o,118,45,4)
 end
@@ -778,60 +829,81 @@ function drw_scoreboard()
 	rrect(6,103,86,20,1)
 	rrect(4,101,86,20,2)
 	
-	line(5,101,89,101,14)
-	line(5,121,89,121,14)
-	line(3,103,3,119,14)
-	line(91,103,91,119,14)
 	
-	pset(4,102,14)
-	pset(90,102,14)
-	pset(90,120,14)
-	pset(4,120,14)
+	multi_line
+	[[
+	5,101,89,101,14
+	5,121,89,121,14
+	3,103,3,119,14
+	91,103,91,119,14
+	]]
 	
-	rectfill(5,103,7,105,14)
-	pset(7,104,2)
-	pset(7,105,2)
-	pset(6,105,2)
+	multi_pset
+	[[
+	4,102,14
+	90,102,14
+	90,120,14
+	4,120,14
+	]]
 	
-	rectfill(5,117,7,119,14)
-	pset(7,118,2)
-	pset(7,117,2)
-	pset(6,117,2)
+	multi_rectfill
+	[[
+	5,103,7,105,14
+	5,117,7,119,14
+	87,117,89,119,14
+	87,103,89,105,14
+	]]
 	
-	rectfill(87,117,89,119,14)
-	pset(87,117,2)
-	pset(88,117,2)
-	pset(87,118,2)
-	
-	rectfill(87,103,89,105,14)
-	pset(87,104,2)
-	pset(87,105,2)
-	pset(88,105,2)
+	multi_pset
+	[[
+	7,104,2
+	7,105,2
+	6,105,2
+	7,118,2
+	7,117,2
+	6,117,2
+	87,117,2
+	88,117,2
+	87,118,2
+	87,104,2
+	87,105,2
+	88,105,2
+	]]
 	
 	--score / points
-	sprint("score "..tostr(score,2),7,107,10,1)
-	pset(7,110,9)
-	pset(12,110,9)
-	pset(15,110,9)
-	pset(19,110,9)
-	pset(21,110,9)
-	pset(23,110,9)
+	sprint("\14"..tostr(score,2),7,107,10,1)
+	
+	multi_pset
+	[[
+	7,110,9
+	12,110,9
+	15,110,9
+	19,110,9
+	21,110,9
+	23,110,9
+	]]
 	
 	--time
 	drw_timer(65,104)
 	
 	--flags
 	if curt=="flag" then
-		circfill(16,116,3,9)
-		circfill(16,118,3,10)
-		circfill(16,117,3,2)
+		multi_circfill
+		[[
+		16,116,3,9
+		16,118,3,10
+		16,117,3,2
+		80,116,3,9
+		80,118,3,10
+		80,117,3,2
+		]]
 		
-		circfill(80,116,3,9)
-		circfill(80,118,3,10)
-		circfill(80,117,3,2)
+		multi_line
+		[[
+		16,113,80,113,9
+		16,121,80,121,10
+		]]
 		
-		line(16,113,80,113,9)
-		line(16,121,80,121,10)
 		rectfill(16,114,80,120,2)
 		
 		drw_popup(
@@ -885,62 +957,54 @@ function upd_tutcursor()
 				if btnp"5" and tutcan==1then
 					new_bubbs(86,100,12,4)
 					flagtile()
-					tutcan=2
-				elseif btnp"4" and tutcan==2 then
-					opentile()
-					tutcan=3
-				elseif btnp"4" and tutcan==3 then
-					sfx"58"
-					tutcan=4
-				elseif btnp"4" and tutcan==4 then
-					sfx"58"
-					tutcan=5
-				elseif btnp"4" and tutcan==5 then
-					sfx"58"
-					tutcan=6
-				elseif btnp"4" and tutcan==6 then
-					opentile()
-					tutcan=7
-				elseif btnp"4" and tutcan==7 then
-					sfx"58"
-					tutcan=8
-				elseif btnp"4" and tutcan==8 then
-					sfx"58"
-					music(0,6000)
-					startgame()
+					tutcan+=1
+				elseif btnp"4" then
+					if tutcan==2 then
+						opentile()
+						tutcan+=1
+					elseif tutcan>=3 and tutcan<=5 then
+						sfx"58"
+						tutcan+=1
+					elseif tutcan==6 then
+						opentile()
+						tutcan+=1
+					elseif tutcan==7 then
+						sfx"58"
+						tutcan+=1
+					elseif tutcan==8 then
+						sfx"58"
+						music(0,6000)
+						startgame()
+					end
 				end
-			elseif not bswap then
-				if btnp"5" and tutcan==2 then
-					opentile()
-					tutcan=3
-				elseif btnp"5" and tutcan==3 then
-					sfx"58"
-					tutcan=4
-				elseif btnp"5" and tutcan==4 then
-					sfx"58"
-					tutcan=5
-				elseif btnp"5" and tutcan==5 then
-					sfx"58"
-					tutcan=6
-				elseif btnp"5" and tutcan==6 then
-					opentile()
-					tutcan=7
-				elseif btnp"5" and tutcan==7 then
-					sfx"58"
-					tutcan=8
-				elseif btnp"5" and tutcan==8 then
-					sfx"58"
-					music(0,6000)
-					startgame()
-				elseif btnp"4" and tutcan==1 then
+			else
+				if btnp"4" and tutcan==1then
 					new_bubbs(86,100,12,4)
 					flagtile()
-					tutcan=2
+					tutcan+=1
+				elseif btnp"5" then
+					if tutcan==2 then
+						opentile()
+						tutcan+=1
+					elseif tutcan>=3 and tutcan<=5 then
+						sfx"58"
+						tutcan+=1
+					elseif tutcan==6 then
+						opentile()
+						tutcan+=1
+					elseif tutcan==7 then
+						sfx"58"
+						tutcan+=1
+					elseif tutcan==8 then
+						sfx"58"
+						music(0,6000)
+						startgame()
+					end
 				end
 			end
 		end
 	end
-end--upd_cursor()
+end
 
 
 function checkgems(_t)
@@ -1214,13 +1278,8 @@ function checkaround2(_t)
 end
 
 function battle()
-	trigbat=true
 	sfx"57"
-	krak=true
-	shake=10
-	wait=100
-	trans=100
-	bsel=1
+	trigbat,krak,shake,wait,trans,bsel=true,true,10,100,100,1
 end
 
 function movecursor()
@@ -1269,21 +1328,26 @@ function drw_kraken()
 	fillp()
 	
 	fillp(░)
-	circfill(20,65,14,5)
-	circfill(63,68,12,5)
-	circfill(93,58,10,5)
-	circfill(113,68,9,5)
+	multi_circfill
+	[[
+	20,65,14,5
+	63,68,12,5
+	93,58,10,5
+	113,68,9,5
+	]]
 	fillp()
 	
 	rectfill(0,80,127,104,13)
-	circfill(10,80,13,13)
-	circfill(28,80,7,13)
-	circfill(45,80,12,13)
-	circfill(65,80,9,13)
-	circfill(85,80,12,13)
-	circfill(100,80,8,13)
-	circfill(120,80,8,13)
-	
+	multi_circfill
+	[[
+	10,80,13,13
+	28,80,7,13
+	45,80,12,13
+	65,80,9,13
+	85,80,12,13
+	100,80,8,13
+	120,80,8,13
+	]]
 	
 	if shake>0 then
 		doshake(1)
@@ -1381,12 +1445,20 @@ function drw_kraken()
 	rectfill(0,105,127,127,2)
 	
 	line(2,104,125,104,2)
-	rectfill(2,105,125,125,14)
-	rectfill(3,106,124,124,2)
-	pset(2,105,2)
-	pset(2,125,2)
-	pset(125,105,2)
-	pset(125,125,2)
+	
+	multi_rectfill
+	[[
+	2,105,125,125,14
+	3,106,124,124,2
+	]]
+	
+	multi_pset
+	[[
+	2,105,2
+	2,125,2
+	125,105,2
+	125,125,2
+	]]
 	
 	--timer
 	drw_timer(5,5)
@@ -1444,19 +1516,23 @@ function drw_win()
 		fadepal((100-develop)/100)
 	end
 	
-	rectfill(0,0,127,127,6)
+	multi_rectfill
+	[[
+	0,0,127,127,6
+	0,14,127,35,9
+	]]
 	
-	--top
-	rectfill(0,14,127,35,9)
 	line(0,14,127,14,10)
 	
-	rectfill(13,17,29,32,7)
-	rectfill(6,17,11,32,7)
-	rectfill(2,17,4,32,4)
-	
-	rectfill(98,17,114,32,7)
-	rectfill(116,17,121,32,7)
-	rectfill(123,17,125,32,4)
+	multi_rectfill
+	[[
+	13,17,29,32,7
+	6,17,11,32,7
+	2,17,4,32,4
+	98,17,114,32,7
+	116,17,121,32,7
+	123,17,125,32,4
+	]]
 	
 	rect(31,17,96,32,7)
 	print("\^t\^wcleared!",34,20,7)
@@ -1475,44 +1551,42 @@ function drw_win()
 		pal(i,4)
 	end
 	--flag
-	sspr(39,109,9,10,12,52)
-	--red
-	sspr(41,39,10,9,43,53)
-	--green
-	sspr(51,39,10,9,73,53)
-	--orange
-	sspr(61,39,10,9,103,53)
-
+	multi_sspr
+	[[
+	39,109,9,10,12,52
+	41,39,10,9,43,53
+	51,39,10,9,73,53
+	61,39,10,9,103,53
+	]]
 	
 	--blue outline
 	pal({1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1})
 	
-	--red
-	sspr(41,39,10,9,43,50)
-	sspr(41,39,10,9,43,52)
-	sspr(41,39,10,9,42,51)
-	sspr(41,39,10,9,44,51)
-	--green
-	sspr(51,39,10,9,73,50)
-	sspr(51,39,10,9,73,52)
-	sspr(51,39,10,9,72,51)
-	sspr(51,39,10,9,74,51)
-	--orange
-	sspr(61,39,10,9,103,50)
-	sspr(61,39,10,9,103,52)
-	sspr(61,39,10,9,102,51)
-	sspr(61,39,10,9,104,51)
+	multi_sspr
+	[[
+	41,39,10,9,43,50
+	41,39,10,9,43,52
+	41,39,10,9,42,51
+	41,39,10,9,44,51
+	51,39,10,9,73,50
+	51,39,10,9,73,52
+	51,39,10,9,72,51
+	51,39,10,9,74,51
+	61,39,10,9,103,50
+	61,39,10,9,103,52
+	61,39,10,9,102,51
+	sspr(61,39,10,9,104,51
+	]]
 	
 	pal()
 	
-	--flag
-	sspr(39,109,9,10,12,51)
-	--red
-	sspr(41,39,10,9,43,51)
-	--green
-	sspr(51,39,10,9,73,51)
-	--orange
-	sspr(61,39,10,9,103,51)
+	multi_sspr
+	[[
+	39,109,9,10,12,51
+	41,39,10,9,43,51
+	51,39,10,9,73,51
+	61,39,10,9,103,51
+	]]
 	
 	--text(points)
 	sprint(flagtiles.."X",12,43,10,2)
@@ -1533,10 +1607,17 @@ function drw_win()
 	drw_hazarddiv(70)
 	
 	--points
-	rectfill(0,75,127,90,9)
-	line(0,76,127,76,10)
-	line(0,91,127,91,4)
-	rectfill(0,92,127,94,13)
+	multi_line
+	[[
+	0,76,127,76,10
+	0,91,127,91,4
+	]]
+	
+	multi_rectfill
+	[[
+	0,75,127,90,9
+	0,92,127,94,13
+	]]
 	
 	f_points=flagtiles*15
 	r_points=gems_r*10
@@ -1547,32 +1628,37 @@ function drw_win()
 	
 	cprint("round > "..tostr(opentiles*tilepoints).." + "..tostr(bonus).." (bonus)",82,1)
 	sprint("time to clear >>> "..stoptime,14,104,1,6)
-	sprint("total score   >>> "..tostr(newscore,2),14,112,1,6)
+	sprint("total score   >>> "..tostr(newscore,0x2),14,112,1,6)
 	
 	--frame
-	rect(0,0,127,127,10)
-	rect(1,1,126,126,9)
+	multi_rect
+	[[
+	0,0,127,127,10
+	1,1,126,126,9
+	]]
 	
 end
 
 function getscore()
 	bonus=f_points+r_points+g_points+o_points
 	newscore=((score<<16)+bonus)>>16
-	if hi<newscore then
-		hi+=newscore
+	if h<newscore then
+		h+=newscore
+		dset(0,h)
 	end
 end
 
 
 function upd_win()
 	fadeeff(1)
-	
 	if not bswap then
 		if btnp(5) then
 			ini_board(newscore,8,8)
+			dset(0,newscore)
 			resetdev()
 			makegems()
 			gems_g,gems_r,gems_o=0,0,0
+			if (level<5) level+=1
 			sfx"58"
 			mcnt+=0.5
 			if mcnt<1 then
@@ -1594,14 +1680,7 @@ function upd_win()
 		end
 	else
 		if btnp(4) then
-			resetdev()
-			makegems()
-			gems_g,gems_r,gems_o=0,0,0
-			ini_board(newscore,8,8)
-			sfx"58"
-			music(0,3000)
-			_upd=upd_game
-			_drw=drw_game
+			--somethng
 		end
 	end
 end
@@ -1656,8 +1735,7 @@ function fadeeff(n)
 end
 
 function resetdev()
-	devspeed=0
-	develop=0
+	wait,devspeed,develop,_upd,_drw=-1,0,0,upd_menu,drw_menu
 end
 
 function sprint(s,x,y,fg,bg)
@@ -1695,15 +1773,26 @@ function drw_pop(x,y,s,c1,c2)
 	?s,x+2,y+1,13
 	sspr(71,39,6,8,x+(#s*4)-2,y+9)
 end
+
+
+-- returns a multi call function
+function multi(f)
+	return 
+		function(s)
+		local a=split(s,"\n")
+		local i
+		for i=1,#a do
+		 f(unpack(split(a[i])))
+		end
+	end
+end
 -->8
 --ui
 
 function fadepal(_perc)
  local p=flr(mid(0,_perc,1)*100)
  local kmax,col,dpal,j,k
- dpal={0,1,1,2,1,13,
- 						6,4,4,9,3,13,
- 						1,13,14}
+ dpal=split"0,1,1,2,1,13,6,4,4,9,3,13,1,13,14"
  
  for j=1,15 do
   col = j
@@ -1719,8 +1808,7 @@ end
 
 
 function doshake(a)
- local shakex=a-rnd(a*2)
- local shakey=a-rnd(a*2)
+ local shakex,shakey=a-rnd(a*2),a-rnd(a*2)
  shakex*=shake
  shakey*=shake
  camera(shakex,shakey)
@@ -1731,8 +1819,7 @@ end
 -- particles
 
 function ini_parts()
-	parts={}
-	smoke={}
+	parts,smoke={},{}
 end
 
 function drw_parts()
@@ -1926,30 +2013,16 @@ bsel=1
 bselpos={{34,108},{24,116},{58,116}}
 
 -- initial variables
-ens={30,10,30,10,30,10,30,10,30,10}
-en_hp=0
-en_cnt=1
-hp=0
-maxhp=20
-plr_ded=false
-en_ded=false
-en_fright=false
-mov_plr=0
-mov_en=0
-batt_cnt=0
+--ens={30,10,30,10,30,10,30,10,30,10}
+ens=split"10,10,10,10,30,10,30,10,30,10"
+en_hp,en_cnt,hp,maxhp,plr_ded,en_ded,en_fright,mov_plr,mov_en,batt_cnt=0,1,0,20,false,false,false,0,0,0
+
 
 --hit marker
-en_hit=false
-eoff=0
-hitcnt=0
-plr_hit=false
-poff=0
+en_hit,eoff,hitcnt,plr_hit,poff=false,0,0,false,0
 
 --pos of target 
-x1=22
-y1=90
-x2=100
-y2=30
+x1,y1,x2,y2=22,90,100,30
 fx,dx=x1,x1
 fy,dy=y1,y1
 
@@ -1968,7 +2041,7 @@ function drw_gameover()
 	cprint("d e d",34,7)
 	cprint("final",70,7)
 	cprint("score",76,7)
-	cprint(tostr(newscore,2),84,7)
+	cprint(tostr(newscore,0x2),84,7)
 end
 
 function upd_gameover()
@@ -1976,23 +2049,15 @@ function upd_gameover()
 	if not bswap then
 		if btnp(5) then
 			sfx"58"
-			wait=-1
 			resetdev()
-			_upd=upd_menu
-			_drw=drw_menu
 		end
 	else
 		if btnp(4) then
 			sfx"58"
-			wait=-1
 			resetdev()
-			_upd=upd_menu
-			_drw=drw_menu
 		end
 	end
 end
-
-
 
 function drw_target()
 	if hp>0 and en_hp>0 
@@ -2026,6 +2091,7 @@ function upd_battle()
 	
 	
 	--plr health
+	--7760
 	if hp<=0 then
 		isgameover()
 	elseif en_hp<=0 then
@@ -2045,14 +2111,7 @@ end
 
 function isgameover()
 		if wait<=0 and wait~=-1 then
-			mov_plr=0
-			mov_en=0
-			plr_ded=false
-			en_ded=false
-			en_fright=false
-			en_cnt=1
-			krak=false
-			trigbat=false
+			mov_plr,mov_en,plr_ded,en_ded,en_fright,en_cnt,krak,trigbat=0,0,false,false,false,1,false,false
 			getscore()
 			resetdev()
 			_upd=upd_gameover
@@ -2131,17 +2190,13 @@ function atk_plr()
 	sfx"56"
 	mak_smoke(
 		50,70,{6,9,4,2},6,80)
-	hp-=maxhp\6
-	plr_hit=true
-	hitcnt=7
+--	hp-=maxhp\6
+	hp=0
 	hitmsg=tostr(rnd(txt))
-	hittim=20
-	plr_turn=true
+	plr_hit,hitcnt,hittim,plr_turn=true,7,20,true
 	if hp<=0 then
 		sfx"51"
-		hp=0
-		plr_ded=true
-		wait=120
+		hp,plr_ded,wait=0,true,120
 	end
 end
 
