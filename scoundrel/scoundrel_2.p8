@@ -73,29 +73,37 @@ function ini_game()
 	newdeck=true
 	dwpn=false
 	pullcard=true
-	handpos={
-		{x=10,y=8},
-		{x=52,y=8},
-		{x=10,y=46},
-		{x=52,y=46},
-		{x=84,y=40}
+	
+	orig_pos={
+		{x=10,y=8,enabled=true},
+		{x=52,y=8,enabled=true},
+		{x=10,y=46,enabled=true},
+		{x=52,y=46,enabled=true},
+		{x=84,y=40,enabled=true},
 	}
-	handpos2={
-		{x=10,y=8},
-		{x=52,y=8},
-		{x=10,y=46},
-		{x=52,y=46},
-		{x=84,y=40}
-	}
-	maxhand=4
+	
+	avai={}
+	for i=1,#orig_pos do
+		add(avai,orig_pos[i])
+	end
+	
+	
+	handposx={10,52,84}
+	handposy={8,46,40}
+	handenable={true,true,true,true}
+	cursel=1
+	curx=1
+	cury=1
+	
+	
 	hasrun=false
 	hp=20
 	maxhp=20
 	dmg=0
 	hasweapon=nil
+	maxhand=4
 	room=1
 	roomcol={1,1,1,2,2,2,3,3,3,5,5,5,4,4,11,11,8,8,9,9,13,13,12,12,10,10}
-	cursel=1
 	prevcur=nil
 	waitfr=0
 	
@@ -114,13 +122,13 @@ function ini_game()
 	copy(shfdeck,shfdeckcopy)
 	
 	--test deck
---	shfdeckcopy={
---		{rank=2,suit="hrt",remcard=false},
---		{rank=3,suit="hrt",remcard=false},
---		{rank=4,suit="hrt",remcard=false},
---		{rank=14,suit="spd",remcard=false},
---		{rank=2,suit="spd",remcard=false},
---	}
+	shfdeckcopy={
+		{rank=2,suit="hrt",remcard=false},
+		{rank=3,suit="hrt",remcard=false},
+		{rank=4,suit="hrt",remcard=false},
+		{rank=14,suit="spd",remcard=false},
+		{rank=2,suit="spd",remcard=false},
+	}
 	
 	dealcards(4)
 	
@@ -188,15 +196,15 @@ function drw_game()
 	end
 	
 	rect(
-		handpos[5].x+10,
-		handpos[5].y+13,
-		handpos[5].x+10+22,
-		handpos[5].y+13+18,
+		handposx[3]+10,
+		handposy[3]+13,
+		handposx[3]+10+22,
+		handposy[3]+13+18,
 		1)
 		
 	if not hasrun and #hand==4 then
-		? "flee",handpos[5].x+14,handpos[5].y+16,12
-		? "room",handpos[5].x+14,handpos[5].y+24,12
+		? "flee",handposx[3]+14,handposy[3]+16,12
+		? "room",handposx[3]+14,handposy[3]+24,12
 	end
 	
 	
@@ -241,13 +249,6 @@ function drw_game()
 	drw_cursor()
 	end
 	
-	if #routines==0 and
-					cursel!=5 then
-		drw_icos(handpos[cursel].x,
-											handpos[cursel].y,
-											hand[cursel])
-	end
-	
 	palt()
 	--frame
 	for i=0,2 do
@@ -259,7 +260,8 @@ function drw_game()
 	--drw_chkdeck(shfdeck,40,2,2)
 	--drw_chkdeck(shfdeckcopy,70,2,9)
 	drw_chkdeck(handcopy,100,2,3)
-	?
+	? curx,20,3,14
+	? cury,20,9,14
 end
 
 function drw_deck(_x,_y)
@@ -271,20 +273,14 @@ function drw_deck(_x,_y)
 end
 
 function drw_hand()
-	if pullcard==false and
-				#discards==0 then
-		for i=1,#hand do
-			if hand[i].remcard==false then
-			? i,90,90+(i*6),8
-			drw_fcard(
-				handpos[i].x,
-				handpos[i].y,
-				hand[i].rank,
-				hand[i].suit
+		for i=1,#orig_pos-1 do
+				drw_fcard(
+					orig_pos[i].x,
+					orig_pos[i].y,
+					hand[i].rank,
+					hand[i].suit
 				)
-			end
 		end
-	end
 end
 
 function drw_cursor()
@@ -298,10 +294,18 @@ function drw_cursor()
 	palt(7,true)
 	sspr(
 		24,27,
-		21,22
-		,handpos2[cursel].x+22,
-		handpos2[cursel].y+20+movy)
+		21,22,
+		avai[cursel].x+22,
+		avai[cursel].y+20+movy)
 	palt()
+	
+	if #routines==0 and
+					cursel!=5 then
+		drw_icos(avai[cursel].x,
+											avai[cursel].y,
+											hand[cursel])
+end
+
 end
 
 function drw_weapon(_x1,_y1,_x2,_y2)
@@ -337,61 +341,9 @@ function upd_game()
 	fadeeff(.4)
 	
 	if develop==100 and #routines==0 then
-		
 		if btnp(❎) then
-			if cursel==5 and #hand==4 then
-				--flee room
-				if (hasrun==false) flee()
-				
-			elseif hand[cursel].suit=="spd" or
-				hand[cursel].suit=="clb" then
-				--punch with fists
-				oldcursel=cursel
-				atkpunch()
-			elseif hand[cursel].suit=="hrt" then
-				--drink potion
-				usepotion()
-			elseif hand[cursel].suit=="dmd" then
-				--take weapon
-				pckweapon()
-			end
-			
-			--refill hand
-			if #hand==1 then
-				pullcard=true
-				room+=1
-				async(carddeal)
-				if #shfdeckcopy<3 then
-					dealcards(#shfdeckcopy)
-				else
-					dealcards(#shfdeck)
-				end
-			end
+			usepotion()
 		end
-	
-		if btnp(🅾️) then
-			if cursel!=5 then
-				--if hand[cursel].suit=="spd" or
-						--hand[cursel].suit=="clb" then
-							--oldcursel=cursel
-							
-							--if (hasweapon) and
-									--	hand[cursel].rank<=hasweapon.lmt then
-									--	atkstab()
-							--end
-				--end
-			end
-			
-			--refill hand
---			if #shfdeckcopy<3 then
---				dealcards(#shfdeckcopy)
---			else
---				dealcards(#shfdeckcopy)
---			end
-		end
-	
-		
-		
 		upd_cursor()
 	end
 end
@@ -400,13 +352,17 @@ function upd_cursor()
 	local current=cursel
 	
 
-	if (btnp(➡️)) cursel+=1
-	if (btnp(⬅️)) cursel-=1
+	if (btnp(➡️) and cursel<5) cursel+=1
+	if (btnp(⬅️) and cursel>1) cursel-=1
 	
-	local n
-	if (#hand<4) n=#hand
-	if (#hand==4) n=5
-	cursel=mid(1,cursel,n)
+	if btnp(⬆️) then
+		if (cursel==3) cursel=1
+		if (cursel==4) cursel=2
+	end
+	if btnp(⬇️) then
+		if (cursel==1) cursel=3
+		if (cursel==2) cursel=4
+	end
 	
 	if current!=cursel then
 		sfx(63)
@@ -486,14 +442,16 @@ function dealcards(v,ran)
 end
 
 function discard(c)
-	hand[c].remcard=true
+	local current
+	if (curx==1 and cury==1) current=1
+	if (curx==2 and cury==1) current=2
+	if (curx==1 and cury==2) current=3
+	if (curx==2 and cury==2) current=4
+	if (curx==3 and cury==3) current=5
 	
-	--add(hand[c],{})
-	--deli(handpos2,c)
-	
-	deli(hand,c)
-	--handcopy={}
-	--copy(hand,handcopy)
+	hand[current].remcard=true
+	deli(avai,current)
+	--cursel=1
 end
 
 function newroom()
@@ -527,7 +485,9 @@ function usepotion()
 	
 	discard(oldcursel)
 	mk_discard()
-	--cursel=1
+	orig_pos[oldcursel].enabled=false
+	deli(avai,oldcursel)
+	cursel=1
 end
 
 function pckweapon()
@@ -1020,8 +980,8 @@ end
 function mk_discard()
 	discards.rank=hand[cursel].rank
 	discards.suit=hand[cursel].suit
-	discards.x=handpos[cursel].x
-	discards.y=handpos[cursel].y
+	discards.x=curx
+	discards.y=cury
 	async(discardani)
 end
 
